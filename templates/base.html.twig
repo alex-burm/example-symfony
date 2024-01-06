@@ -4,6 +4,23 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+
+        <!-- Google Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:300,600,700" rel="stylesheet">
+
+        <!-- Bootstrap core CSS -->
+        <link href="{{ asset("css/bootstrap.min.css") }}" rel="stylesheet">
+
+        <!-- MENU CSS -->
+        <link href="{{ asset("css/metismenu.min.css") }}" rel="stylesheet" type="text/css" />
+
+        <!-- MATERIALDESIGN ICON -->
+        <link rel="stylesheet" type="text/css" href="{{ asset("css/materialdesignicons.min.css") }}">
+
+        <!-- CUSTOM STYLESHEET -->
+        <link href="{{ asset("css/style.css") }}" rel="stylesheet" type="text/css" />
+        <link href="{{ asset("css/default.css") }}" rel="stylesheet" type="text/css" />
+
         {% block stylesheets %}
         {% endblock %}
 
@@ -11,6 +28,63 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <div id="wrapper">
+            <!-- Top Bar Start -->
+            <div class="topbar-mobile">
+                <div class="logo">
+                    <a href='index.html'><img src="images/logo.png" alt="" class="" style="height: 44px;"></a>
+                    <button class="button-menu-mobile">
+                        <i class="mdi mdi-menu"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Top Bar End -->
+            <!-- ========== Left Sidebar Start ========== -->
+            <div class="left side-menu">
+
+                <div class="slimscroll-menu" id="remove-scroll">
+
+                    <div class="logo">
+                        <a href='index.html'><img src="{{ asset("images/logo.png") }}" alt="" class="" style="height: 44px;"></a>
+                        <p class="text-muted">Graduating from the halls of the University Of Western Sydney in late 2011. </p>
+                    </div>
+
+                    <!--- Sidemenu -->
+                    <div id="sidebar-menu">
+                        <!-- Left Menu Start -->
+                        <ul class="metismenu" id="side-menu">
+
+                            <li>
+                                <a href="{{ path('homepage') }}"><span> Home</span></a>
+                            </li>
+
+                            <li>
+                                <a href="{{ path('about') }}">About</a>
+                            </li>
+
+                            <li>
+                                <a href="{{ path('contact') }}">Contact</a>
+                            </li>
+
+                        </ul>
+
+                        <div class="copyright-box">
+                            <p>2020 © Blogezy. </p>
+                        </div>
+
+                    </div>
+                    <!-- Sidebar -->
+                    <div class="clearfix"></div>
+
+                </div>
+                <!-- Sidebar -left -->
+
+            </div>
+            <!-- Left Sidebar End -->
+
+            <div class="page-wrapper">
+                {% block body %}{% endblock %}
+            </div>
+        </div>
     </body>
 </html>
