@@ -1,0 +1,11 @@
+controllers:
+    resource:
+        path: ../src/Controller/
+        namespace: App\Controller
+    type: attribute
+
+lucky_show:
+    path: /product/show/{id}
+    controller: App\Controller\LuckyController::show
+    requirements:
+        id: \d+

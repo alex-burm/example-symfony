@@ -1,0 +1,14 @@
+a: {{ a }},
+b: {{ b }},
+c: {{ c }},
+
+<ul>
+{% for item in list %}
+    <li>
+        <img src="{{ item.img }}" width="50px" />
+        {{ item.name }},
+        <br />
+        Date: {{ item.date }}
+    </li>
+{% endfor %}
+</ul>

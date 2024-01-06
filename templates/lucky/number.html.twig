@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <p>Here is function round: {{ round(12.5) }}</p>
+    <p>Here is filter example: {{ 12.5|example }}</p>
+
+    {{ render(controller('App\\Controller\\LuckyController::latestPosts', {
+        a: 10,
+        b: 20,
+        c: 30,
+    })) }}
+
+{% endblock %}
