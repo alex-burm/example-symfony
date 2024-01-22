@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Category;
 use App\Entity\Post;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,5 +31,19 @@ class DefaultController extends AbstractController
     public function contact(): Response
     {
         return $this->render('default/contact.html.twig');
+    }
+
+    public function categoriesWidget(EntityManagerInterface $em): Response
+    {
+        $list = $em->getRepository(Category::class)->getPopularList();
+
+        return $this->render('default/widget/categories.html.twig', [
+            'list' => $list,
+        ]);
+    }
+
+    public function popularPostsWidget(): Response
+    {
+        return $this->render('default/widget/popularPosts.html.twig');
     }
 }

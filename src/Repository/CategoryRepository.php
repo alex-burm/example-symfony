@@ -21,28 +21,21 @@ class CategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Category::class);
     }
 
-//    /**
-//     * @return Category[] Returns an array of Category objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('c.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function getPopularList(): array
+    {
+        $sql = '
+            SELECT
+                category.name,
+                COUNT(post.id) as posts
+            FROM category
+            INNER JOIN post ON post.category_id = category.id
+            GROUP BY category.id
+        ';
 
-//    public function findOneBySomeField($value): ?Category
-//    {
-//        return $this->createQueryBuilder('c')
-//            ->andWhere('c.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        return $this->_em
+            ->getConnection()
+            ->prepare($sql)
+            ->executeQuery()
+            ->fetchAllAssociative();
+    }
 }

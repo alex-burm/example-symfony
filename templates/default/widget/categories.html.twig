@@ -1,0 +1,8 @@
+<aside class="widget widget_categories">
+    <div class="widget-title">Categories</div>
+    <ul>
+        {% for item in list %}
+            <li><a href="#">{{ item.name }}</a> ({{ item.posts }})</li>
+        {% endfor %}
+    </ul>
+</aside>
