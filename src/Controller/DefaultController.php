@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Form\FeedbackForm;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -28,9 +30,22 @@ class DefaultController extends AbstractController
     }
 
     #[Route("/contact", name: "contact")]
-    public function contact(): Response
+    public function contact(Request $request, EntityManagerInterface $em): Response
     {
-        return $this->render('default/contact.html.twig');
+        $form = $this->createForm(FeedbackForm::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $feedback = $form->getData();
+
+            $em->persist($feedback);
+            $em->flush();
+
+            return $this->render('default/thanks.html.twig');
+        }
+
+        return $this->render('default/contact.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     public function categoriesWidget(EntityManagerInterface $em): Response
