@@ -5,10 +5,14 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Entity\Post;
 use App\Form\FeedbackForm;
+use App\Repository\PostRepository;
+use App\Service\ExportCsv;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
@@ -60,5 +64,20 @@ class DefaultController extends AbstractController
     public function popularPostsWidget(): Response
     {
         return $this->render('default/widget/popularPosts.html.twig');
+    }
+
+    #[Route("/export", name: "export")]
+    public function exportAction(ExportCsv $exportCsv, PostRepository $postRepository): Response
+    {
+        $list = $postRepository->getAllItems();
+        $file = $exportCsv->run($list);
+
+        $response = new BinaryFileResponse($file);
+        $response->headers->set('Content-type', 'text/csv');
+        $response->setContentDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'export-data.csv'
+        );
+        return $response;
     }
 }
