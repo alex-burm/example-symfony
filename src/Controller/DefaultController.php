@@ -7,6 +7,7 @@ use App\Entity\Post;
 use App\Form\FeedbackForm;
 use App\Repository\PostRepository;
 use App\Service\ExportCsv;
+use App\Service\ExportInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -67,16 +68,16 @@ class DefaultController extends AbstractController
     }
 
     #[Route("/export", name: "export")]
-    public function exportAction(ExportCsv $exportCsv, PostRepository $postRepository): Response
+    public function exportAction(ExportInterface $exporter, PostRepository $postRepository): Response
     {
         $list = $postRepository->getAllItems();
-        $file = $exportCsv->run($list);
+        $file = $exporter->run($list);
 
         $response = new BinaryFileResponse($file);
-        $response->headers->set('Content-type', 'text/csv');
+        $response->headers->set('Content-type', $exporter->getFileType());
         $response->setContentDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'export-data.csv'
+            $exporter->getFriendlyFileName()
         );
         return $response;
     }

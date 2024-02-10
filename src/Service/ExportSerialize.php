@@ -4,7 +4,7 @@ namespace App\Service;
 
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class ExportCsv implements ExportInterface
+class ExportSerialize implements ExportInterface
 {
     protected KernelInterface $kernel;
 
@@ -28,15 +28,11 @@ class ExportCsv implements ExportInterface
      */
     public function run(array $data): string
     {
-        $lines = [];
-        foreach ($data as $row) {
-            $lines[] = implode(",", $row);
-        }
-        $string = implode("\n", $lines);
+        $string = serialize($data);
 
         $filename = tempnam(
             $this->kernel->getProjectDir() . '/var',
-            'export-csv-'
+            'export-serialize-'
         );
         file_put_contents($filename, $string);
 
@@ -45,16 +41,11 @@ class ExportCsv implements ExportInterface
 
     public function getFileType(): string
     {
-        return 'text/csv';
+        return 'text/plain';
     }
 
     public function getFriendlyFileName(): string
     {
-        return 'export-data.csv';
-    }
-
-    public function sayHello()
-    {
-
+        return 'export-data.txt';
     }
 }

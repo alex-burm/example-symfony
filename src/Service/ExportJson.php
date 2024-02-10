@@ -4,13 +4,13 @@ namespace App\Service;
 
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class ExportCsv implements ExportInterface
+class ExportJson implements ExportInterface
 {
-    protected KernelInterface $kernel;
+    protected string $projectDir = '';
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(KernelInterface $a)
     {
-        $this->kernel = $kernel;
+        $this->projectDir = $a->getProjectDir();
     }
 
     /**
@@ -28,15 +28,11 @@ class ExportCsv implements ExportInterface
      */
     public function run(array $data): string
     {
-        $lines = [];
-        foreach ($data as $row) {
-            $lines[] = implode(",", $row);
-        }
-        $string = implode("\n", $lines);
+        $string = json_encode($data);
 
         $filename = tempnam(
-            $this->kernel->getProjectDir() . '/var',
-            'export-csv-'
+            $this->projectDir . '/var',
+            'export-json-'
         );
         file_put_contents($filename, $string);
 
@@ -45,16 +41,11 @@ class ExportCsv implements ExportInterface
 
     public function getFileType(): string
     {
-        return 'text/csv';
+        return 'application/json';
     }
 
     public function getFriendlyFileName(): string
     {
-        return 'export-data.csv';
-    }
-
-    public function sayHello()
-    {
-
+        return 'export-data.json';
     }
 }
