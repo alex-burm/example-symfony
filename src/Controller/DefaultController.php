@@ -14,6 +14,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
@@ -35,8 +37,11 @@ class DefaultController extends AbstractController
     }
 
     #[Route("/contact", name: "contact")]
-    public function contact(Request $request, EntityManagerInterface $em): Response
-    {
+    public function contact(
+        Request $request,
+        EntityManagerInterface $em,
+        MailerInterface $mailer,
+    ): Response {
         $form = $this->createForm(FeedbackForm::class);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -44,6 +49,19 @@ class DefaultController extends AbstractController
 
             $em->persist($feedback);
             $em->flush();
+
+            $message = new Email();
+            $message->from('ask@drivedcrm.com');
+            $message->to('burmistrov.alexander@gmail.com');
+            $message->text('New feedback!');
+            $message->html($this->renderView('mail/feedback.html.twig', [
+                'name' => $feedback->getName(),
+                'message' => $feedback->getMessage(),
+                'contact' => $feedback->getEmail(),
+            ]));
+            $message->subject('Feedback form: [' . $feedback->getSubject() . ']');
+
+            $mailer->send($message);
 
             return $this->render('default/thanks.html.twig');
         }
