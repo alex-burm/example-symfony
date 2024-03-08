@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
@@ -63,7 +62,8 @@ class DefaultController extends AbstractController
 
             $mailer->send($message);
 
-            return $this->render('default/thanks.html.twig');
+            $this->addFlash('success', 'Thanks for your feedback!');
+            return $this->redirectToRoute('contact');
         }
 
         return $this->render('default/contact.html.twig', [
