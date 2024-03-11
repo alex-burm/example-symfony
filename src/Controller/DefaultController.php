@@ -99,4 +99,10 @@ class DefaultController extends AbstractController
         );
         return $response;
     }
+
+    #[Route("/login", name: "login")]
+    public function login(): Response
+    {
+        return $this->render('default/login.html.twig');
+    }
 }
