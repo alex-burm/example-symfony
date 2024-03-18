@@ -1,3 +1,2 @@
-Home: Главная
-About: О проекте
-Contact: Контакты
+"Hello, %name%!": "Привет, %name%!"
+"{0}No category|{1}One category|]1,Inf[Categories (%count%)": "{0}Нет категорий|{1}Одна категория|]1,Inf[Категорий (%count%)"

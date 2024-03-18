@@ -55,15 +55,15 @@
                         <ul class="metismenu" id="side-menu">
 
                             <li>
-                                <a href="{{ path('homepage') }}"><span> {{ 'Home'|trans }}</span></a>
+                                <a href="{{ path('homepage') }}"><span> {{ 'Home'|trans({}, 'menu') }}</span></a>
                             </li>
 
                             <li>
-                                <a href="{{ path('about') }}">{{ 'About'|trans }}</a>
+                                <a href="{{ path('about') }}">{{ 'About'|trans({}, 'menu') }}</a>
                             </li>
 
                             <li>
-                                <a href="{{ path('contact') }}">{{ 'Contact'|trans }}</a>
+                                <a href="{{ path('contact') }}">{{ 'Contact'|trans({}, 'menu') }}</a>
                             </li>
 
                         </ul>

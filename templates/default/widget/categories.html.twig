@@ -1,5 +1,9 @@
 <aside class="widget widget_categories">
-    <div class="widget-title">Categories</div>
+    <div class="widget-title">
+        {{ '{0}No category|{1}One category|]1,Inf[Categories (%count%)'|trans({
+            '%count%': list|length
+        }) }}
+    </div>
     <ul>
         {% for item in list %}
             <li><a href="#">{{ item.name }}</a> ({{ item.posts }})</li>
