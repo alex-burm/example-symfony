@@ -25,3 +25,7 @@ services:
 
     App\Service\ExportInterface:
         class: App\Service\ExportSerialize
+
+    App\EventListener\AppListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.request }
