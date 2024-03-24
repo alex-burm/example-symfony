@@ -37,6 +37,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $loginAt = null;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $loginCnt = 0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -135,5 +141,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return $this->login;
+    }
+
+    public function getLoginAt(): ?\DateTimeImmutable
+    {
+        return $this->loginAt;
+    }
+
+    public function setLoginAt(?\DateTimeImmutable $loginAt): void
+    {
+        $this->loginAt = $loginAt;
+    }
+
+    public function getLoginCnt(): int
+    {
+        return $this->loginCnt;
+    }
+
+    public function setLoginCnt(int $loginCnt): void
+    {
+        $this->loginCnt = $loginCnt;
     }
 }
