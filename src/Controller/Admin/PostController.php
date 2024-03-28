@@ -3,10 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
+use App\EventListener\PostChangesEvent;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,7 +26,11 @@ class PostController extends AbstractController
     }
 
     #[Route('/new', name: 'app_admin_post_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $dispatcher,
+    ): Response
     {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
@@ -32,6 +39,9 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($post);
             $entityManager->flush();
+
+            $category = $post->getCategory();
+            $dispatcher->dispatch(new PostChangesEvent($category));
 
             return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -69,11 +79,19 @@ class PostController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_admin_post_delete', methods: ['POST'])]
-    public function delete(Request $request, Post $post, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request,
+        Post $post,
+        EntityManagerInterface $entityManager,
+        EventDispatcherInterface $dispatcher
+    ): Response {
         if ($this->isCsrfTokenValid('delete'.$post->getId(), $request->request->get('_token'))) {
+            $category = $post->getCategory();
+
             $entityManager->remove($post);
             $entityManager->flush();
+
+            $dispatcher->dispatch(new PostChangesEvent($category));
         }
 
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);

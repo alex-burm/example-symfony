@@ -26,10 +26,8 @@ class CategoryRepository extends ServiceEntityRepository
         $sql = '
             SELECT
                 category.name,
-                COUNT(post.id) as posts
+                category.post_cnt as posts
             FROM category
-            INNER JOIN post ON post.category_id = category.id
-            GROUP BY category.id
         ';
 
         return $this->_em
