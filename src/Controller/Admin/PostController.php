@@ -7,8 +7,8 @@ use App\EventListener\PostChangesEvent;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +18,25 @@ use Symfony\Component\Routing\Attribute\Route;
 class PostController extends AbstractController
 {
     #[Route('/', name: 'app_admin_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository): Response
-    {
+    public function index(
+        Request $request,
+        PostRepository $postRepository,
+        PaginatorInterface $paginator,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        $page = max($request->query->get('page', 1), 1);
+        $limit = 3;
+
+        $dql = 'SELECT a FROM App\Entity\Post a ORDER BY a.id DESC';
+        $query = $entityManager->createQuery($dql);
+        $posts = $paginator->paginate(
+            $query,
+            $page,
+            $limit,
+        );
+
         return $this->render('admin/post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
+            'posts' => $posts,
         ]);
     }
 
@@ -30,8 +45,7 @@ class PostController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $dispatcher,
-    ): Response
-    {
+    ): Response {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
