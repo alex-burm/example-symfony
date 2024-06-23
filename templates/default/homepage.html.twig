@@ -40,7 +40,7 @@
                             <div class="post-header">
                                 <h2 class="post-title"><a href="{{ path("post_show", {id: post.id}) }}">{{ post.name }}</a></h2>
                                 <ul class="post-meta">
-                                    <li><i class="mdi mdi-calendar"></i> {{ post.publishedAt|format_date }}</li>
+                                    <li><i class="mdi mdi-calendar"></i> {{ post.published_at|format_date }}</li>
                                     <li>
                                         <i class="mdi mdi-tag-text-outline"></i>
                                         {{ post.category }}
@@ -63,6 +63,8 @@
 
                         </article>
                     {% endfor %}
+
+                    {{ knp_pagination_render(posts) }}
                 </div>
                 <!-- Content end-->
 

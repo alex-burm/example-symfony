@@ -6,9 +6,9 @@ use App\Entity\Category;
 use App\Entity\Post;
 use App\Form\FeedbackForm;
 use App\Repository\PostRepository;
-use App\Service\ExportCsv;
 use App\Service\ExportInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,27 +16,30 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DefaultController extends AbstractController
 {
-    #[Route("/", name: "homepage")]
-    public function homepage(EntityManagerInterface $em): Response
-    {
-        $posts = $em->getRepository(Post::class)->findAll();
+    #[Route('/', name: 'homepage')]
+    public function homepage(
+        Request $request,
+        EntityManagerInterface $em,
+        PaginatorInterface $paginator
+    ): Response {
+        $list = $em->getRepository(Post::class)->getPostListQuery();
+        $posts = $paginator->paginate($list, max(0, $request->get('page', 1)), 3);
 
         return $this->render('default/homepage.html.twig', [
             'posts' => $posts,
         ]);
     }
 
-    #[Route("/about", name: "about")]
+    #[Route('/about', name: 'about')]
     public function about(): Response
     {
         return $this->render('default/about.html.twig');
     }
 
-    #[Route("/contact", name: "contact")]
+    #[Route('/contact', name: 'contact')]
     public function contact(
         Request $request,
         EntityManagerInterface $em,
@@ -59,11 +62,12 @@ class DefaultController extends AbstractController
                 'message' => $feedback->getMessage(),
                 'contact' => $feedback->getEmail(),
             ]));
-            $message->subject('Feedback form: [' . $feedback->getSubject() . ']');
+            $message->subject('Feedback form: ['.$feedback->getSubject().']');
 
             $mailer->send($message);
 
             $this->addFlash('success', 'Thanks for your feedback!');
+
             return $this->redirectToRoute('contact');
         }
 
@@ -86,7 +90,7 @@ class DefaultController extends AbstractController
         return $this->render('default/widget/popularPosts.html.twig');
     }
 
-    #[Route("/export", name: "export")]
+    #[Route('/export', name: 'export')]
     public function exportAction(ExportInterface $exporter, PostRepository $postRepository): Response
     {
         $list = $postRepository->getAllItems();
@@ -98,10 +102,11 @@ class DefaultController extends AbstractController
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             $exporter->getFriendlyFileName()
         );
+
         return $response;
     }
 
-    #[Route("/login", name: "login")]
+    #[Route('/login', name: 'login')]
     public function login(): Response
     {
         return $this->render('default/login.html.twig');
