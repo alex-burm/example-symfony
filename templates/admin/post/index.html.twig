@@ -9,11 +9,13 @@
                 <h1>Post index</h1>
                 <a href="{{ path('app_admin_post_new') }}">Create new</a>
             </div>
-            <div class="ibox-content">
-                {{ knp_pagination_render(posts) }}
+            <form action="{{ path('app_admin_post_delete_selected') }}" method="post" class="ibox-content">
                 <table class="table">
                     <thead>
                     <tr>
+                        <th>
+                            <input type="checkbox" id="all" />
+                        </th>
                         <th>Id</th>
                         <th>Name</th>
                         <th>Content</th>
@@ -24,6 +26,7 @@
                     <tbody>
                     {% for post in posts %}
                         <tr>
+                            <td><input type="checkbox" name="id[]" value="{{ post.id }}"></td>
                             <td>{{ post.id }}</td>
                             <td>{{ post.name }}</td>
                             <td>{{ post.content }}</td>
@@ -41,7 +44,17 @@
                     </tbody>
                 </table>
                 {{ knp_pagination_render(posts) }}
-            </div>
+                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">DELETE SELECTED</button>
+            </form>
         </div>
     </div>
+
+    <script>
+        document.querySelector('#all').addEventListener('click', function(){
+            const checked = this.checked;
+            document.querySelectorAll('input[name="id[]"]').forEach(function(el){
+                el.checked = checked;
+            })
+        });
+    </script>
 {% endblock %}

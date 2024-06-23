@@ -110,4 +110,20 @@ class PostController extends AbstractController
 
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/delete-selected', name: 'app_admin_post_delete_selected', methods: ['POST'], priority: 99)]
+    public function deleteSelected(
+        Request $request,
+        EntityManagerInterface $entityManager,
+    ): Response {
+        foreach ($request->request->all('id') as $id) {
+            $post = $entityManager->find(Post::class, $id);
+            if (false === \is_null($post)) {
+                $entityManager->remove($post);
+            }
+        }
+
+        $entityManager->flush();
+        return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
+    }
 }
