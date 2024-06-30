@@ -45,6 +45,12 @@
     <div id="page-wrapper" class="gray-bg dashbard-1">
         <div class="wrapper wrapper-content">
             <div class="row">
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message|raw }}
+                    </div>
+                {% endfor %}
+
                 {% block body %}{% endblock %}
             </div>
         </div>

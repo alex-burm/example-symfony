@@ -25,8 +25,17 @@ class DefaultController extends AbstractController
         EntityManagerInterface $em,
         PaginatorInterface $paginator
     ): Response {
-        $list = $em->getRepository(Post::class)->getPostListQuery();
-        $posts = $paginator->paginate($list, max(0, $request->get('page', 1)), 3);
+        $query = $em->getRepository(Post::class)
+            ->getPostListQuery(
+                $request->query->get('keyword')
+            );
+
+        $posts = $paginator->paginate($query, max(0, $request->get('page', 1)), 3);
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('default/_posts.html.twig', [
+                'posts' => $posts,
+            ]);
+        }
 
         return $this->render('default/homepage.html.twig', [
             'posts' => $posts,

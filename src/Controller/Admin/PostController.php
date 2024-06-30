@@ -123,6 +123,9 @@ class PostController extends AbstractController
             }
         }
 
+        $message = '<a href="' . $this->generateUrl('homepage') .  '">Object successfully deleted!</a>';
+        $this->addFlash('success', $message);
+
         $entityManager->flush();
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
     }

@@ -28,7 +28,7 @@ class PostRepository extends ServiceEntityRepository
         return $stm->executeQuery()->fetchAllAssociative();
     }
 
-    public function getPostListQuery(): string
+    public function getPostListQuery(?string $keyword = null): string
     {
         $sql = '
             SELECT SQL_CALC_FOUND_ROWS 
@@ -37,6 +37,10 @@ class PostRepository extends ServiceEntityRepository
             FROM post
             INNER JOIN category ON post.category_id = category.id
         ';
+
+        if (strlen($keyword ?? '') > 0) {
+            $sql .= ' WHERE post.name LIKE "%' . addslashes(htmlspecialchars($keyword)) . '%"';
+        }
         return $sql;
     }
 }
