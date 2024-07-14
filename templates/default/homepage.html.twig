@@ -33,10 +33,12 @@
 
             <div class="row">
                 <!-- Content-->
-                <div class="col-xl-8" id="post-list">
-                    {% include 'default/_posts.html.twig' %}
+                <div class="col-xl-8">
+                    <div id="post-list">
+                        {% include 'default/_posts.html.twig' %}
+                    </div>
+                    <button class="btn btn-light" id="load-more-btn">Load more</button>
                 </div>
-                <!-- Content end-->
 
                 <!-- Sidebar-->
                 <div class="col-xl-4">
@@ -152,6 +154,18 @@
                 })
             }, 500);
 
+        })
+
+        const btnLoadMore = document.querySelector('#load-more-btn');
+        btnLoadMore.addEventListener('click', async () => {
+
+            const article = document.querySelector('#post-list article:last-child');
+            const date = article.dataset.date;
+            const id = article.dataset.id;
+            const response = await fetch('{{ path('get-posts') }}?date=' + date + '&id=' + id);
+
+            document.querySelector('#post-list')
+                .insertAdjacentHTML('beforeend', await response.text());
         })
     </script>
 {% endblock %}

@@ -120,4 +120,18 @@ class DefaultController extends AbstractController
     {
         return $this->render('default/login.html.twig');
     }
+
+    #[Route('/get-posts', name: 'get-posts')]
+    public function getPosts(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $posts = $entityManager->getRepository(Post::class)
+            ->getNextPosts(
+                $request->query->get('id'),
+                $request->query->get('date')
+            );
+
+        return $this->render('default/_posts.html.twig', [
+            'posts' => $posts,
+        ]);
+    }
 }
