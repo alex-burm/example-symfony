@@ -185,13 +185,14 @@
         const btnLoadMore = document.querySelector('#load-more-btn');
         const postTemplate = document.querySelector('#post-template');
 
+        let isLoading = false;
         btnLoadMore.addEventListener('click', async () => {
-
             const article = document.querySelector('#post-list article:last-child');
             const date = article.dataset.date;
             const id = article.dataset.id;
-            const response = await fetch('{{ path('get-posts') }}?date=' + date + '&id=' + id);
 
+            isLoading = true;
+            const response = await fetch('{{ path('get-posts') }}?date=' + date + '&id=' + id);
             const posts = await response.json();
 
             for (let post of posts) {
@@ -204,6 +205,18 @@
                 html = html.replaceAll('__POST_CONTENT__', post.content);
 
                 document.querySelector('#post-list').insertAdjacentHTML('beforeend', html);
+            }
+
+            isLoading = false;
+        })
+
+        window.addEventListener('scroll', () => {
+            if (isLoading) {
+                return ;
+            }
+
+            if (window.pageYOffset > (document.querySelector('body').offsetHeight - 1500)) {
+                btnLoadMore.click();
             }
         })
     </script>

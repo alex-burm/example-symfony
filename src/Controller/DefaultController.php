@@ -20,6 +20,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
 {
+    const LIMIT = 5;
+
     #[Route('/', name: 'homepage')]
     public function homepage(
         Request $request,
@@ -31,7 +33,11 @@ class DefaultController extends AbstractController
                 $request->query->get('keyword')
             );
 
-        $posts = $paginator->paginate($query, max(0, $request->get('page', 1)), 3);
+        $posts = $paginator->paginate(
+            $query,
+            max(0, $request->get('page', 1)),
+            self::LIMIT
+        );
         if ($request->isXmlHttpRequest()) {
             return $this->render('default/_posts.html.twig', [
                 'posts' => $posts,
@@ -134,7 +140,8 @@ class DefaultController extends AbstractController
         $posts = $entityManager->getRepository(Post::class)
             ->getNextPosts(
                 $request->query->get('id'),
-                $request->query->get('date')
+                $request->query->get('date'),
+                self::LIMIT
             );
 
         $posts = \array_map(function ($x) {

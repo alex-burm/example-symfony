@@ -49,8 +49,11 @@ class PostRepository extends ServiceEntityRepository
         return $sql;
     }
 
-    public function getNextPosts(int $id, string $publishedAt): array
-    {
+    public function getNextPosts(
+        int $id,
+        string $publishedAt,
+        ?int $limit = 10
+    ): array {
         $sql = '
             SELECT 
                 post.*,
@@ -61,11 +64,12 @@ class PostRepository extends ServiceEntityRepository
                 post.published_at <= :publishedAt
                 AND post.id < :id
             ORDER BY post.published_at DESC, post.id DESC
-            LIMIT 3
+            LIMIT :limit
         ';
 
         $stm = $this->getStatement($sql);
         $stm->bindValue(':id', $id, ParameterType::INTEGER);
+        $stm->bindValue(':limit', $limit, ParameterType::INTEGER);
         $stm->bindValue(':publishedAt', $publishedAt);
         return $stm->executeQuery()->fetchAllAssociative();
     }
