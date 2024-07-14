@@ -128,6 +128,32 @@
         </div>
         <!-- end container -->
     </section>
+
+    <script type="application/x-template" id="post-template">
+        <article class="post" data-id="__POST_ID__" data-date="__POST_DATE__">
+            <div class="post-header">
+                <h2 class="post-title"><a href="__POST_URL__">__POST_NAME__</a></h2>
+                <ul class="post-meta">
+                    <li><i class="mdi mdi-calendar"></i> __POST_DATE__</li>
+                    <li>
+                        <i class="mdi mdi-tag-text-outline"></i>
+                        __POST_CATEGORY__
+                    </li>
+                    <li><i class="mdi mdi-comment-multiple-outline"></i> <a href="#">3 Comments</a></li>
+                </ul>
+            </div>
+            <div class="post-preview">
+                <a href="__POST_URL__"><img src="{{ asset('images/blog/blog-1.jpg') }}" alt="" class="img-fluid rounded"></a>
+            </div>
+            <div class="post-content">
+                __POST_CONTENT__
+            </div>
+            <div>
+                <a href="__POST_URL__" class="btn btn-outline-custom">Read More <i class="mdi mdi-arrow-right"></i></a>
+            </div>
+        </article>
+    </script>
+
     <script>
         const form = document.querySelector('#form-search');
         const input = form.querySelector('input[name="keyword"]');
@@ -157,6 +183,8 @@
         })
 
         const btnLoadMore = document.querySelector('#load-more-btn');
+        const postTemplate = document.querySelector('#post-template');
+
         btnLoadMore.addEventListener('click', async () => {
 
             const article = document.querySelector('#post-list article:last-child');
@@ -164,8 +192,19 @@
             const id = article.dataset.id;
             const response = await fetch('{{ path('get-posts') }}?date=' + date + '&id=' + id);
 
-            document.querySelector('#post-list')
-                .insertAdjacentHTML('beforeend', await response.text());
+            const posts = await response.json();
+
+            for (let post of posts) {
+                let html = postTemplate.textContent;
+                html = html.replaceAll('__POST_ID__', post.id);
+                html = html.replaceAll('__POST_DATE__', post.published_at);
+                html = html.replaceAll('__POST_URL__', post.url);
+                html = html.replaceAll('__POST_NAME__', post.name);
+                html = html.replaceAll('__POST_CATEGORY__', post.category);
+                html = html.replaceAll('__POST_CONTENT__', post.content);
+
+                document.querySelector('#post-list').insertAdjacentHTML('beforeend', html);
+            }
         })
     </script>
 {% endblock %}

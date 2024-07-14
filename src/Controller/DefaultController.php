@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -124,14 +125,27 @@ class DefaultController extends AbstractController
     #[Route('/get-posts', name: 'get-posts')]
     public function getPosts(Request $request, EntityManagerInterface $entityManager): Response
     {
+        if (0 === \strlen($request->query->get('id', ''))
+            || 0 === \strlen($request->query->get('date', ''))
+        ) {
+            throw $this->createNotFoundException('Invalid request');
+        }
+
         $posts = $entityManager->getRepository(Post::class)
             ->getNextPosts(
                 $request->query->get('id'),
                 $request->query->get('date')
             );
 
-        return $this->render('default/_posts.html.twig', [
-            'posts' => $posts,
-        ]);
+        $posts = \array_map(function ($x) {
+            $url = $this->generateUrl('post_show', [
+                'id' => $x['id'],
+            ]);
+
+            $x['url'] = $url;
+            return $x;
+        }, $posts);
+
+        return new JsonResponse($posts);
     }
 }
