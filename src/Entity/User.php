@@ -29,6 +29,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $login = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $confirmationCode = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $password = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
@@ -118,6 +124,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->login = $login;
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+
     public function getPassword(): ?string
     {
         return $this->password;
@@ -161,5 +177,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLoginCnt(int $loginCnt): void
     {
         $this->loginCnt = $loginCnt;
+    }
+
+    public function getConfirmationCode(): ?string
+    {
+        return $this->confirmationCode;
+    }
+
+    public function setConfirmationCode(?string $confirmationCode): void
+    {
+        $this->confirmationCode = $confirmationCode;
     }
 }

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <section class="h-100vh pt-5">
+        <div class="home-center">
+            <div class="home-desc-center">
+                <div class="container">
+
+                    <div class="row justify-content-center">
+                        <!-- Content-->
+                        <div class="col-8">
+
+                            <!-- Post-->
+                            <article class="post">
+                                <h5 class="text-center mt-0 mb-5 pb-3 text-uppercase"><b>Register user</b></h5>
+
+                                {% for message in app.flashes('success') %}
+                                    <div class="alert alert-success">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+
+                                {{ form_start(form) }}
+
+                                    {{ form_row(form.email) }}
+                                    {{ form_row(form.firstName) }}
+                                    {{ form_row(form.lastName) }}
+                                    {{ form_row(form.password.first) }}
+                                    {{ form_row(form.password.second) }}
+
+                                    <button type="submit" class="btn btn-primary">Register</button>
+                                {{ form_end(form) }}
+
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
