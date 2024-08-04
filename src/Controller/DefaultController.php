@@ -17,27 +17,47 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 class DefaultController extends AbstractController
 {
-    const LIMIT = 5;
+    public const LIMIT = 5;
 
     #[Route('/', name: 'homepage')]
     public function homepage(
         Request $request,
         EntityManagerInterface $em,
-        PaginatorInterface $paginator
+        PaginatorInterface $paginator,
+        TagAwareCacheInterface $cache,
     ): Response {
-        $query = $em->getRepository(Post::class)
-            ->getPostListQuery(
-                $request->query->get('keyword')
-            );
+        if ($request->query->has('keyword')) {
+            $query = $em->getRepository(Post::class)
+                ->getPostListQuery($request->query->get('keyword'));
 
-        $posts = $paginator->paginate(
-            $query,
-            max(0, $request->get('page', 1)),
-            self::LIMIT
-        );
+            $posts = $paginator->paginate(
+                $query,
+                max(0, $request->get('page', 1)),
+                self::LIMIT
+            );
+        } else {
+            $posts = $cache->get('post_list', function (ItemInterface $item) use ($em, $paginator) {
+                $query = $em->getRepository(Post::class)
+                    ->getPostListQuery();
+
+                $posts = $paginator->paginate(
+                    $query,
+                    1,
+                    self::LIMIT
+                );
+
+                $item->tag('posts');
+
+                return $posts;
+            });
+        }
+
         if ($request->isXmlHttpRequest()) {
             return $this->render('default/_posts.html.twig', [
                 'posts' => $posts,
@@ -129,20 +149,33 @@ class DefaultController extends AbstractController
     }
 
     #[Route('/get-posts', name: 'get-posts')]
-    public function getPosts(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function getPosts(
+        Request $request,
+        EntityManagerInterface $em,
+        TagAwareCacheInterface $cache,
+    ): Response {
         if (0 === \strlen($request->query->get('id', ''))
             || 0 === \strlen($request->query->get('date', ''))
         ) {
             throw $this->createNotFoundException('Invalid request');
         }
 
-        $posts = $entityManager->getRepository(Post::class)
-            ->getNextPosts(
-                $request->query->get('id'),
-                $request->query->get('date'),
-                self::LIMIT
-            );
+        $id = $request->query->get('id');
+        $date = $request->query->get('date');
+
+        $key = 'post_list_'.\md5($id.$date);
+        $posts = $cache->get($key, function (ItemInterface $item) use ($em, $id, $date) {
+            $posts = $em->getRepository(Post::class)
+                ->getNextPosts(
+                    $id,
+                    $date,
+                    self::LIMIT
+                );
+
+            $item->tag('posts');
+
+            return $posts;
+        });
 
         $posts = \array_map(function ($x) {
             $url = $this->generateUrl('post_show', [
@@ -150,6 +183,7 @@ class DefaultController extends AbstractController
             ]);
 
             $x['url'] = $url;
+
             return $x;
         }, $posts);
 

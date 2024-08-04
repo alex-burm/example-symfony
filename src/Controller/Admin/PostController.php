@@ -13,6 +13,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 #[Route('/admin/post')]
 class PostController extends AbstractController
@@ -45,6 +46,7 @@ class PostController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $dispatcher,
+        TagAwareCacheInterface $cache,
     ): Response {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
@@ -57,6 +59,7 @@ class PostController extends AbstractController
             $category = $post->getCategory();
             $dispatcher->dispatch(new PostChangesEvent($category));
 
+            $cache->invalidateTags(['posts']);
             return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -75,14 +78,18 @@ class PostController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_admin_post_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Post $post, EntityManagerInterface $entityManager): Response
-    {
+    public function edit(
+        Request $request,
+        Post $post,
+        EntityManagerInterface $entityManager,
+        TagAwareCacheInterface $cache,
+    ): Response {
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
+            $cache->invalidateTags(['posts']);
             return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -97,7 +104,8 @@ class PostController extends AbstractController
         Request $request,
         Post $post,
         EntityManagerInterface $entityManager,
-        EventDispatcherInterface $dispatcher
+        EventDispatcherInterface $dispatcher,
+        TagAwareCacheInterface $cache,
     ): Response {
         if ($this->isCsrfTokenValid('delete'.$post->getId(), $request->request->get('_token'))) {
             $category = $post->getCategory();
@@ -105,6 +113,7 @@ class PostController extends AbstractController
             $entityManager->remove($post);
             $entityManager->flush();
 
+            $cache->invalidateTags(['posts']);
             $dispatcher->dispatch(new PostChangesEvent($category));
         }
 
@@ -115,6 +124,7 @@ class PostController extends AbstractController
     public function deleteSelected(
         Request $request,
         EntityManagerInterface $entityManager,
+        TagAwareCacheInterface $cache
     ): Response {
         foreach ($request->request->all('id') as $id) {
             $post = $entityManager->find(Post::class, $id);
@@ -123,7 +133,9 @@ class PostController extends AbstractController
             }
         }
 
-        $message = '<a href="' . $this->generateUrl('homepage') .  '">Object successfully deleted!</a>';
+        $cache->invalidateTags(['posts']);
+
+        $message = '<a href="'.$this->generateUrl('homepage').'">Object successfully deleted!</a>';
         $this->addFlash('success', $message);
 
         $entityManager->flush();
