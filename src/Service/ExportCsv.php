@@ -30,7 +30,7 @@ class ExportCsv implements ExportInterface
     {
         $lines = [];
         foreach ($data as $row) {
-            $lines[] = implode(",", $row);
+            $lines[] = implode(',', $row);
         }
         $string = implode("\n", $lines);
 

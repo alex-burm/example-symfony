@@ -10,8 +10,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -83,13 +85,24 @@ class PostController extends AbstractController
         Post $post,
         EntityManagerInterface $entityManager,
         TagAwareCacheInterface $cache,
+        KernelInterface $kernel,
     ): Response {
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $file */
+            $uploadedFile = $form->get('image')->getData();
+            $file = $uploadedFile->move(
+                $kernel->getProjectDir() . '/public/uploads',
+                $uploadedFile->getClientOriginalName(),
+            );
+
+            $post->setImage($file->getBasename());
+
             $entityManager->flush();
             $cache->invalidateTags(['posts']);
+
             return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -139,6 +152,7 @@ class PostController extends AbstractController
         $this->addFlash('success', $message);
 
         $entityManager->flush();
+
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
     }
 }

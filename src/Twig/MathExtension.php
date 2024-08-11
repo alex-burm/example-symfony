@@ -13,7 +13,8 @@ class MathExtension extends AbstractExtension
         return [
             // new TwigFunction('round', [$this, 'myRound']),
             new TwigFunction(
-                'round', function ($value) {
+                'round',
+                function ($value) {
                     return round($value);
                 }
             ),

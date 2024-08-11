@@ -18,7 +18,7 @@ class AppListener
     public function onKernelRequest(RequestEvent $event): void
     {
         if (false === $event->isMainRequest()) {
-            return ;
+            return;
         }
 
         $request = $event->getRequest();

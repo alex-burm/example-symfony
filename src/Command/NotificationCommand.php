@@ -57,7 +57,7 @@ class NotificationCommand extends Command
             $output->writeln(' and sent');
         }
 
-        $io->success("End working.");
+        $io->success('End working.');
         return Command::SUCCESS;
     }
 }

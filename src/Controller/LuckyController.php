@@ -14,8 +14,7 @@ class LuckyController extends AbstractController
         $number = 99; // rand(0, 100);
         $list = [1, 2, 534, 4564, 'Alex', 'test', 'ABC'];
 
-        $latestPosts = [
-        ];
+        $latestPosts = [];
 
         return $this->render('lucky/number.html.twig', [
             'number' => $number,

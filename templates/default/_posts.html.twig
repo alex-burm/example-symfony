@@ -14,7 +14,9 @@
         </div>
 
         <div class="post-preview">
-            <a href="{{ path("post_show", {id: post.id}) }}"><img src="{{ asset('images/blog/blog-1.jpg') }}" alt="" class="img-fluid rounded"></a>
+            <a href="{{ path("post_show", {id: post.id}) }}">
+                <img src="{{ asset('uploads/' ~ (post.image|default('blog-preview.jpg'))) }}" alt="" class="img-fluid rounded">
+            </a>
         </div>
 
         <div class="post-content">

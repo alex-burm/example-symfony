@@ -7,10 +7,12 @@ use App\Entity\Post;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class PostType extends AbstractType
 {
@@ -28,7 +30,24 @@ class PostType extends AbstractType
                 'class' => Category::class,
                 'choice_label' => 'id',
             ])
-        ;
+            ->add('image', FileType::class, [
+                'mapped' => false,
+                'attr' => [
+                    'accept' => 'image/png, image/jpeg, image/jpg, image/webp',
+                ],
+                'constraints' => [
+                    new File([
+                        'maxSize' => '2000k',
+                        'mimeTypes' => [
+                            'image/png',
+                            'image/jpeg',
+                            'image/jpg',
+                            'image/bpm',
+                            'image/webp',
+                        ],
+                    ]),
+                ],
+            ]);
 
         $builder->get('publishedAt')->addModelTransformer(
             new CallbackTransformer(

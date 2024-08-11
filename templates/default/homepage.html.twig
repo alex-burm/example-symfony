@@ -143,7 +143,7 @@
                 </ul>
             </div>
             <div class="post-preview">
-                <a href="__POST_URL__"><img src="{{ asset('images/blog/blog-1.jpg') }}" alt="" class="img-fluid rounded"></a>
+                <a href="__POST_URL__"><img src="__POST_IMAGE__" alt="" class="img-fluid rounded"></a>
             </div>
             <div class="post-content">
                 __POST_CONTENT__
@@ -203,6 +203,7 @@
                 html = html.replaceAll('__POST_NAME__', post.name);
                 html = html.replaceAll('__POST_CATEGORY__', post.category);
                 html = html.replaceAll('__POST_CONTENT__', post.content);
+                html = html.replaceAll('__POST_IMAGE__', '/uploads/' + (post.image || 'blog-preview.jpg'));
 
                 document.querySelector('#post-list').insertAdjacentHTML('beforeend', html);
             }

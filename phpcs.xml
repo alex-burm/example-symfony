@@ -1,0 +1,840 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     @author  Patrick Plocke <patrick.plocke@metadesign.de>
+     @version v0.7
+     @date    2015-11-05
+     @name    MetaBMSCore
+     @description
+     Tab Based PSR2-like coding standard
+     @see:     http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php
+     @see:     https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml
+     @see:     https://stackoverflow.com/questions/24662018/php-code-sniffer-rules
+     @see:     https://github.com/eviweb/fuelphp-phpcs/blob/master/Standards/FuelPHP/ruleset.xml
+     @see:     https://github.com/squizlabs/PHP_CodeSniffer/blob/master/CodeSniffer/Standards/PHPCS/ruleset.xml
+     @see:     https://github.com/WMI/phpcs-rules/blob/master/ruleset.xml
+     @see:     https://edorian.github.io/php-coding-standard-generator/#phpcs
+     @Description:
+     PHPCodeSniffer Configuration File to automatically meet the MetaDesign BMS Coding Guidelines. Coding Guideline defined here: http://wiki.meta-ib.de/index.php/CodingGuideline
+     Usage:
+     $ phpcs -w -s - -standard=MetaBMSCore .
+     How to fix
+     $ phpcbf  - -standard=MetaBMSCore .
+     Additional Usage (phpmd)
+     $ phpmd . text cleancode
+     -->
+<ruleset name="MetaBMSCore">
+    <config name="php_version" value="8.1" />
+    <description>Tab-based PSR2-like Coding Standard</description>
+
+    <!--
+                TODO:
+                        Plainy import PSR1 + PSR2 and ignore some shit
+                            -->
+    <!-- NICE ANNOTATION
+            https://github.com/Majkl578/consistence-coding-standard/blob/master/Consistence/ruleset.xml
+                https://raw.githubusercontent.com/jpdrawneek/php_codesniffer_rules/master/rules.xml
+                    -->
+    <!-- ====================================================================== -->
+    <!-- 1. Default Ignores -->
+    <!-- ====================================================================== -->
+    <!-- Ignore version control directories. -->
+    <exclude-pattern>*/.git/*</exclude-pattern>
+    <exclude-pattern>*/.svn/*</exclude-pattern>
+    <exclude-pattern>*/.hg/*</exclude-pattern>
+    <exclude-pattern>*/.bzr/*</exclude-pattern>
+    <exclude-pattern>*/migrations/*</exclude-pattern>
+    <exclude-pattern>*/entity/*</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <!-- ====================================================================== -->
+    <!-- 2. Files -->
+    <!-- ====================================================================== -->
+    <!--
+                2.1 Line Feed
+                        =============
+                                All PHP files MUST use the Unix LF (linefeed) line ending.
+                                    -->
+    <rule ref="Generic.Files.LineEndings">
+        <properties>
+            <property name="eolChar" value="\n"/>
+        </properties>
+    </rule>
+    <!--
+                2.2 Eol
+                        =======
+                                GENERIC: All PHP files MUST have at least one newline at end of file.
+                                        PSR2:    All PHP files MUST have ONLY ONE newline at end of file.
+                                            -->
+    <rule ref="Generic.Files.EndFileNewline"/>
+    <rule ref="PSR2.Files.EndFileNewline"/>
+    <rule ref="PSR12.Keywords.ShortFormTypeKeywords"/>
+    <!--
+                2.3 Encoding
+                        ============
+                                PHP code MUST use only UTF-8 without BOM.
+                                    -->
+    <rule ref="Generic.Files.ByteOrderMark"/>
+    <!-- ====================================================================== -->
+    <!-- 3. Spaces, Tabs, Indentation -->
+    <!-- ====================================================================== -->
+    <!--
+                3.1 Trailing spaces
+                        ===================
+                                There MUST NOT be trailing whitespace at the end of non-blank lines
+                                    -->
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace">
+        <properties>
+            <property name="ignoreBlankLines"
+                      value="false"/><!-- turned on by PSR2 -> turning off to be more general -->
+        </properties>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.StartFile">
+        <severity>5</severity> <!-- No Trailing spaces at start of file -->
+    </rule>
+    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EndFile">
+        <severity>5</severity> <!-- No Trailing spaces at end of file -->
+    </rule>
+    <!--rule ref="Squiz.WhiteSpace.SuperfluousWhitespace.EmptyLines">
+        <severity>0</severity>  <Ignore multiple empty lines>
+    </rule-->
+    <!--
+                3.2 Indentation
+                        ===============
+                                Indent by One TAB (length of 4 spaces)
+                                    -->
+    <arg name="tab-width" value="4"/>
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+    <!--<rule ref="Generic.WhiteSpace.DisallowSpaceIndent"/>-->
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="indent" value="4"/>
+            <property name="tabIndent" value="true"/>
+            <property name="exact" value="false"/>
+            <property name="ignoreIndentationTokens" type="array" value="T_STRING_CONCAT,T_COMMENT"/>
+        </properties>
+    </rule>
+    <!--
+                3.3 Spacings
+                        ============
+                            -->
+    <!-- Closing
+         braces of scopes must be aligned correctly -->
+    <rule ref="PEAR.WhiteSpace.ScopeClosingBrace">
+        <properties>
+<!--            <property name="indent" value="4"/>-->
+<!--            <property name="tabIndent" value="true"/>-->
+        </properties>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace">
+        <properties>
+<!--            <property name="indent" value="4"/>-->
+<!--            <property name="tabIndent" value="true"/>-->
+        </properties>
+    </rule>
+    <rule ref="PEAR.WhiteSpace.ScopeClosingBrace.Line">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore">
+        <severity>0</severity>
+    </rule>
+    <!-- Ensures
+         that there is one space before and after a logical operator. -->
+    <!-- WRONG:
+         if ($a &&$b) -->
+    <!-- RIGHT:
+         if ($a && $b) -->
+    <rule ref="Squiz.WhiteSpace.LogicalOperatorSpacing"/>
+    <!-- Ensures
+         that operators have one space surrounding them. -->
+    <!-- WRONG:
+         $x=$y; -->
+    <!-- RIGHT:
+         $x = $y; -->
+    <rule ref="Squiz.WhiteSpace.OperatorSpacing">
+        <properties>
+            <property name="ignoreNewlines" value="true"/>
+        </properties>
+    </rule>
+    <!-- Ensure
+         that there is no whitespace before a semicolon -->
+    <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
+    <!-- Ensure
+         that there is a single space after a scope keyword -->
+    <!-- WRONG:
+         public    function() {} -->
+    <!-- RIGHT:
+         public function() {} -->
+    <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
+    <!-- Ensures
+         there is no whitespace before a ObjectOperator ( -> ) -->
+    <!-- WRONG:
+         $x ->test() -->
+    <!-- RIGHT:
+         $x->test() -->
+    <rule ref="Squiz.WhiteSpace.ObjectOperatorSpacing">
+        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/><!-- clashes in multiline calls -->
+    </rule>
+    <!-- Ensure
+         cast statements dont contain whitespace. -->
+    <!-- @see:
+         Generic.Formatting.NoSpaceAfterCast -->
+    <rule ref="Squiz.WhiteSpace.CastSpacing"/>
+    <rule ref="Squiz.WhiteSpace.FunctionOpeningBraceSpace"/>
+    <!--
+         <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+            <exclude name="Squiz.WhiteSpace.FunctionSpacing.After"/>--><!-- does not allow PHPUnit ignore comments -->
+    <!--    <properties>
+                    <property name="spacing" value="1"/>
+                        </properties>
+                        </rule>-->
+    <rule ref="Squiz.WhiteSpace.LanguageConstructSpacing"/>
+    <!-- <rule
+         ref="Squiz.WhiteSpace.MemberVarSpacing"/> -->
+    <!-- ======================================================================
+         -->
+    <!-- 4.
+         PHP Tags -->
+    <!-- ======================================================================
+         -->
+    <!--
+                4.1 PHP Tags
+                        ============
+                                PHP code MUST use the long <?php ?> tags
+                                        Or the short-echo <?= ?> tags
+                                            -->
+    <rule ref="Generic.PHP.DisallowShortOpenTag"/>
+    <rule ref="Generic.PHP.DisallowShortOpenTag.EchoFound">
+        <severity>5</severity>
+    </rule>
+    <!--
+                4.2 Closing PHP Tag
+                        ===================
+                                Files containing only PHP code should always omit the closing PHP tag (?>).
+                                    -->
+    <rule ref="Zend.Files.ClosingTag"/>
+    <rule ref="PSR2.Files.ClosingTag"/>
+    <!-- ======================================================================
+         -->
+    <!-- 5.
+         PHP Keywords -->
+    <!-- ======================================================================
+         -->
+    <!-- Make
+         all php-internal function keywords lower case -->
+    <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>
+    <!-- Ensures
+         all calls to builtin PHP functions are lowercase. -->
+    <rule ref="Squiz.PHP.LowercasePHPFunctions"/>
+    <!-- Make
+         all php-internal keywords lower case -->
+    <rule ref="Generic.PHP.LowerCaseKeyword"/>
+    <!-- PHP
+         Constants (true, false, null, ...) MUST be lower case -->
+    <rule ref="Generic.PHP.LowerCaseConstant"/>
+    <!-- ======================================================================
+         -->
+    <!-- 6.
+         Comments -->
+    <!-- ======================================================================
+         -->
+    <!-- Make
+         sure PHPDoc is aligned -->
+    <rule ref="Squiz.Commenting.DocCommentAlignment">
+        <exclude
+                name="Squiz.Commenting.DocCommentAlignment.SpaceAfterStar"/><!-- space needed for indented annotations -->
+    </rule>
+    <!-- Make
+         sure no Perl-style comments (#) are used -->
+    <rule ref="PEAR.Commenting.InlineComment"/>
+    <!-- TODO:
+         What does it do? -->
+    <rule ref="Squiz.Commenting.InlineComment"/>
+    <rule ref="Squiz.Commenting.InlineComment.NotCapital">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.DocBlock">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.SpacingBefore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.SpacingAfter">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.Commenting.InlineComment.NoSpaceBefore">
+        <severity>0</severity>
+    </rule>
+    <!-- /TODO
+         -->
+    <rule ref="Squiz.Commenting.FunctionCommentThrowTag"/>
+    <!-- TODO:
+         uncomment
+         <rule ref="Squiz.Commenting.BlockComment" />
+         -->
+    <!--
+         <rule ref="PEAR.Commenting.FunctionComment" />
+         <rule ref="Squiz.Commenting.ClosingDeclarationComment" />
+         -->
+    <!--
+         <rule ref="Squiz.Commenting.LongConditionClosingComment" />
+         -->
+    <!-- Warn
+         about todo/fixme comments - ->
+         <rule ref="Generic.Commenting.Todo"/>
+         <rule ref="Generic.Commenting.Fixme"/>
+         -->
+    <rule ref="Squiz.Commenting.EmptyCatchComment"/>
+    <!-- Functions
+         need comments -->
+    <rule ref="Squiz.Commenting.FunctionComment">
+        <!--<exclude
+             name="Squiz.Commenting.FunctionComment.EmptyThrows"/>--><!-- @throws are forbidden -->
+        <exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/><!-- collection syntax such as string[] is not supported -->
+        <!--exclude name="Squiz.Commenting.FunctionComment.InvalidReturn"/ --><!-- enforces incorrect types -->
+        <!-- exclude name="Squiz.Commenting.FunctionComment.InvalidReturnNotVoid"/ --><!-- is not able to detect return types such as string|null as correct -->
+        <!--<exclude
+             name="Squiz.Commenting.FunctionComment.InvalidThrows"/>--><!-- @throws are forbidden -->
+        <!--<exclude name="Squiz.Commenting.FunctionComment.Missing"/>&lt;!&ndash; PHPDoc is not required on all methods &ndash;&gt;-->
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/><!-- comments are not required for @param -->
+        <!--exclude name="Squiz.Commenting.FunctionComment.MissingReturn"/ -->
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/><!-- comments don't have to be sentences -->
+        <exclude name="Squiz.Commenting.FunctionComment.ParamCommentNotCapital"/><!-- comments don't have to be sentences -->
+        <!--<exclude
+             name="Squiz.Commenting.FunctionComment.SpacingAfterParamName"/>--><!-- we don't want spacing with alignment -->
+        <!--<exclude
+             name="Squiz.Commenting.FunctionComment.SpacingAfterParamType"/>--><!-- we don't want spacing with alignment -->
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNoFullStop"/><!-- @throws are forbidden -->
+        <exclude name="Squiz.Commenting.FunctionComment.ThrowsNotCapital"/><!-- @throws are forbidden -->
+        <exclude name="Squiz.Commenting.FunctionComment.TypeHintMissing"/><!-- doesn't work with self as typehint -->
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.DuplicateReturn">
+        <message>Only 1 @return annotation is allowed in a function comment</message>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.ExtraParamComment">
+        <message>Extra @param annotation</message>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.InvalidNoReturn">
+        <message>Function has no return statement, but annotation @return is present</message>
+    </rule>
+    <rule ref="Squiz.Commenting.FunctionComment.MissingParamTag">
+        <message>@param annotation for parameter "%s" missing</message>
+    </rule>
+    <!-- Variables
+         need comments -->
+    <rule ref="Squiz.Commenting.VariableComment">
+        <exclude name="Squiz.Commenting.VariableComment.TagNotAllowed"/><!-- Allow @since tag in variable DocBloc-->
+    </rule>
+    <!-- ======================================================================
+         -->
+    <!-- 8.
+         Namespaces -->
+    <!-- ======================================================================
+         -->
+    <!-- There
+         must be one blank line after the namespace declaration -->
+    <rule ref="PSR2.Namespaces.NamespaceDeclaration"/>
+    <!-- Ensures
+         USE blocks are declared according to PSR2 -->
+    <rule ref="PSR2.Namespaces.UseDeclaration"/>
+    <!-- ======================================================================
+         -->
+    <!-- 8.
+         Classes -->
+    <!-- ======================================================================
+         -->
+    <!-- A
+         class or interface must not be defined in multiple files. -->
+    <rule ref="Generic.Classes.DuplicateClassName"/>
+    <!-- Class
+         Brace on Newline -->
+    <rule ref="PEAR.Classes.ClassDeclaration"/>
+    <!-- PSR2
+         Class -->
+    <!-- 1
+         space between keywords -->
+    <!-- 1
+         space after class NAME -->
+    <!-- The
+         KEYWORD must be on the same line as the class NAME -->
+    <!-- Only
+         1 interface specified per line on a multi-line implements declaration -->
+    <!-- Closing
+         brace must be on a line by itself -->
+    <!-- NOTE:
+         If you want whitespace around class body, use PEAR instead and comment this out -->
+    <rule ref="PSR2.Classes.ClassDeclaration"/>
+    <!-- Class
+         and interface names must start with a capital letter for each -->
+    <!-- part
+         of the name, separated by underscores. -->
+    <rule ref="PEAR.NamingConventions.ValidClassName"/>
+    <!-- TODO:
+         what does this do? -->
+    <rule ref="Squiz.Classes.ValidClassName"/>
+    <!-- /TODO
+         -->
+    <!-- Disallows
+         usage of PHP 4 style constructors -->
+    <rule ref="Generic.NamingConventions.ConstructorName"/>
+    <!-- ======================================================================
+         -->
+    <!-- 9.
+         Functions -->
+    <!-- ======================================================================
+         -->
+    <!-- Ensure
+         that variables aren't passed as a reference to a function -->
+    <rule ref="Generic.Functions.CallTimePassByReference"/>
+    <!-- No
+         Space before comma (in arguments), One space after comma -->
+    <!-- WRONG:
+         foo($a ,$b); -->
+    <!-- RIGHT:
+         foo($a, $b); -->
+    <rule ref="Generic.Functions.FunctionCallArgumentSpacing"/>
+    <!-- Function
+         Brace on Newline -->
+    <!-- WRONG:
+         function foo() { -->
+    <!--        }
+                -->
+    <!-- -->
+    <!-- RIGHT:
+         function foo() -->
+    <!--        {
+                -->
+    <!--        }
+                -->
+    <!-- This
+         does not apply to closures -->
+    <!-- Closures
+         must have the opening brace at the same line -->
+    <!-- rule ref="Generic.Functions.OpeningFunctionBraceBsdAllman"/ -->
+    <!-- Enforces
+         function call signatures "foo($a, $b, $c)" style reporting all other whitespaces. -->
+    <!-- WRONG:
+         foo (); foo( ); foo() ; -->
+    <!-- RIGHT:
+         foo(); -->
+    <!-- <rule
+         ref="PEAR.Functions.FunctionCallSignature"/> -->
+    <!-- TODO:
+         what does it do -->
+    <rule ref="PSR2.Methods.FunctionCallSignature"/>
+    <!-- NOTE:
+         If you want to allow comments after Open Brace change severity -->
+    <rule ref="PSR2.Methods.FunctionCallSignature.ContentAfterOpenBracket">
+        <severity>5</severity>
+    </rule>
+    <!-- /TODO
+         -->
+    <!-- TODO:
+         what does it doe -->
+    <rule ref="PSR2.Methods.MethodDeclaration"/>
+    <rule ref="PSR2.Methods.MethodDeclaration.Underscore">
+        <severity>0</severity>
+    </rule>
+    <!-- /TODO
+         -->
+    <!-- Ensure
+         that parameters defined for a function that have -->
+    <!-- a
+         default value come at the end of the function signature. -->
+    <!-- TODO:
+         comment this out if you need NULL as a default value -->
+    <rule ref="PEAR.Functions.ValidDefaultValue"/>
+    <!-- Enforces
+         single and multi-line function declarations to defined correctly. -->
+    <!-- Single
+         line declarations follow the Generic BSD-Allman brace sniff. -->
+    <rule ref="PEAR.Functions.FunctionDeclaration"/>
+    <!-- TODO:
+         what does it doe -->
+    <rule ref="Squiz.Functions.FunctionDeclaration"/>
+    <!-- /TODO
+         -->
+    <!-- TODO:
+         what does it doe -->
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration"/>
+    <!-- If
+         you want to allow comments after brace change severity -->
+    <rule ref="Squiz.Functions.MultiLineFunctionDeclaration.ContentAfterBrace">
+        <severity>5</severity>
+    </rule>
+    <!-- /TODO
+         -->
+    <!-- Make
+         sure to have 0 spaces before the comma of function arguments -->
+    <!-- Make
+         sure to have 1 space after the comma of function arguments -->
+    <!-- In
+         the argument list, there MUST NOT be a space before each comma, and there MUST be one space after each comma. -->
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing">
+        <properties>
+            <property name="equalsSpacing" value="1"/>
+        </properties>
+    </rule>
+    <!-- TODO:
+         remove -->
+    <rule ref="Squiz.Functions.FunctionDeclarationArgumentSpacing.SpacingAfterHint">
+        <severity>5</severity>
+    </rule>
+    <!-- /TODO
+         -->
+    <!-- Protected
+         and private functions must start with an underscore. -->
+    <!-- Public
+         functions may not start with an underscore. -->
+    <rule ref="Squiz.NamingConventions.ValidFunctionName"/>
+    <rule ref="Squiz.NamingConventions.ValidFunctionName.PublicUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidFunctionName.PrivateNoUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidFunctionName.ScopeNotCamelCaps">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.NamingConventions.ValidFunctionName"/>
+    <rule ref="PEAR.NamingConventions.ValidFunctionName.PublicUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.NamingConventions.ValidFunctionName.PrivateNoUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.NamingConventions.ValidFunctionName.ScopeNotCamelCaps">
+        <severity>0</severity>
+    </rule>
+    <!-- ======================================================================
+         -->
+    <!-- 10.
+         Class Properties / Variables -->
+    <!-- ======================================================================
+         -->
+    <rule ref="PSR2.Classes.PropertyDeclaration"/>
+    <rule ref="PSR2.Classes.PropertyDeclaration.Underscore">
+        <severity>0</severity>
+    </rule>
+    <!-- Private
+         members must have an underscore in front -->
+    <!-- Public
+         members must not. -->
+    <rule ref="Squiz.NamingConventions.ValidVariableName"/>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.NotCamelCaps">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="Squiz.NamingConventions.ValidVariableName.PublicHasUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.NamingConventions.ValidVariableName"/>
+    <rule ref="PEAR.NamingConventions.ValidVariableName.PrivateNoUnderscore">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.NamingConventions.ValidVariableName.PublicUnderscore">
+        <severity>0</severity>
+    </rule>
+    <!-- Always
+         use 'SELF::' for self referencing -->
+    <!-- NOTE:
+         What about late-static-binding? -->
+    <!-- <rule
+         ref="Squiz.Classes.SelfMemberReference"/> -->
+    <!-- ======================================================================
+         -->
+    <!-- 11.
+         Constants -->
+    <!-- ======================================================================
+         -->
+    <!-- Constants
+         must be UPPERCASE -->
+    <rule ref="Generic.NamingConventions.UpperCaseConstantName"/>
+    <!-- ======================================================================
+         -->
+    <!-- 11.
+         Control Structures (If/Else/Elseif) -->
+    <!-- ======================================================================
+         -->
+    <!-- Space
+         between control structures -->
+    <!-- if
+         () { -->
+    <!-- }
+         elseif () { -->
+    <rule ref="PEAR.ControlStructures.ControlSignature"/>
+    <!-- TODO:
+         What exactly does this do? -->
+    <rule ref="Squiz.ControlStructures.ControlSignature"/>
+    <!-- /TODO
+         -->
+    <!-- Closing
+         parenthesis of a multi-line IF statement must be on a new line -->
+    <!-- Each
+         line must begin with a boolean operator -->
+    <!-- there
+         must be a single space between the closing parenthesis and the opening brace. -->
+    <!--    if
+            (($condition1
+                            || $condition2)
+                            && $condition3
+                                        ) {
+                            }
+                                -->
+    <!--<rule
+         ref="PEAR.ControlStructures.MultiLineCondition"/> -->
+    <!-- Everything
+         needs braces '{' -->
+    <!-- WRONG:
+         if (true) continue -->
+    <!-- RIGHT:
+         if (true) { continue; } -->
+    <rule ref="Generic.ControlStructures.InlineControlStructure"/>
+    <!-- PSR2
+         SWITCH rules -->
+    <!-- Keywords
+         must be lowercase -->
+    <!-- Keywords
+         must be indented from SWITCH by one $indent -->
+    <!-- CASE
+         keyword must be followed by a single space -->
+    <!-- There
+         must be no space before a colon in a CASE -->
+    <!-- Statements
+         must not be defined using curly brackets -->
+    <!-- Terminating
+         statement must be indented to the same level as the CASE body -->
+    <!-- There
+         must be a comment when FALLTHROUGH is intended in a non-empty case body!!! -->
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration">
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.SpaceBeforeColonCASE"/>
+        <exclude name="PSR2.ControlStructures.SwitchDeclaration.SpaceBeforeColonDEFAULT"/>
+    </rule>
+    <rule ref="PSR2.ControlStructures.SwitchDeclaration.BreakNotNewLine">
+        <severity>0</severity>
+    </rule>
+    <!-- TODO:
+         Description!! -->
+    <rule ref="Squiz.ControlStructures.LowercaseDeclaration"/>
+    <!-- /TODO
+         -->
+    <!-- TODO:
+         What does this do??? -->
+    <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration"/>
+    <rule ref="Squiz.ControlStructures.ForLoopDeclaration"/>
+    <!-- /TODO
+         -->
+    <!-- Verifies
+    that there are no else if statements. Elseif should be used instead -->
+    <!-- TODO
+         ENABLE:
+            <rule ref="PSR2.ControlStructures.ElseIfDeclaration"/>
+            -->
+    <!-- PSR2
+         Spaces between braces -->
+    <!-- No
+    Spaces After Opening Brace -->
+    <!-- No
+    Spaces Before Closing Brace -->
+    <rule ref="PSR2.ControlStructures.ControlStructureSpacing"/>
+    <!-- we
+    want to put first expression of multiline condition on next line -->
+    <rule ref="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace">
+        <severity>0</severity>
+    </rule>
+    <!-- TODO:
+    What does this do??? -->
+    <rule ref="Squiz.Operators.ValidLogicalOperators"/>
+    <!-- /TODO
+    -->
+    <!-- ======================================================================
+    -->
+    <!-- 7.
+    Strings -->
+    <!-- ======================================================================
+    -->
+    <!--
+            7. String quotation
+                    ===================
+                            Single quotes are preferred over double quotes.
+                                -->
+    <rule ref="Squiz.Strings.DoubleQuoteUsage"/>
+    <rule ref="Squiz.Strings.DoubleQuoteUsage.ContainsVar">
+        <message>Variable "%s" not allowed in double quoted string; use sprintf() instead</message>
+    </rule>
+    <!-- TODO:
+            Currently we do not know yet if Strings separation should
+                    be done with 1 space or if we do not care
+                        <rule ref="Squiz.Strings.ConcatenationSpacing">
+                                    <properties>
+                                                    <property name="ignoreNewlines" value="true"/>
+                                                                <property name="spacing" value="1"/>
+                                                                        </properties>
+                                                                            </rule>
+                                                                                -->
+    <!-- ======================================================================
+    -->
+    <!-- 7.
+    Arrays -->
+    <!-- ======================================================================
+    -->
+    <rule ref="Squiz.Arrays.ArrayBracketSpacing"/>
+    <rule ref="Squiz.Arrays.ArrayDeclaration">
+        <exclude name="Squiz.Arrays.ArrayDeclaration.CloseBraceNewLine"/><!-- does not handle wrapped content -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.CloseBraceNotAligned"/><!-- expects closing brace at the same level as opening brace -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned"/><!-- we don't want spacing with alignment -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.FirstIndexNoNewline"/><!-- expects multi-value array always written on multiple lines -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.FirstValueNoNewline"/><!-- expects multi-value array always written on multiple lines -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeyNotAligned"/><!-- uses indentation of only single space -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed"/><!-- even a single-value array can be written on multiple lines -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.NoCommaAfterLast"/><!-- expects multi-value array always written on multiple lines -->
+        <exclude
+                name="Squiz.Arrays.ArrayDeclaration.SingleLineNotAllowed"/><!-- multiple values can be written on a single line -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNotAligned"/><!-- we don't want spacing with alignment -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.KeySpecified"/><!-- Do not need a key for the first entry -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.NoKeySpecified"/><!-- Do not need to specify a key -->
+        <exclude name="Squiz.Arrays.ArrayDeclaration.ValueNoNewline"/>
+    </rule>
+    <!-- ======================================================================
+    -->
+    <!-- 6.
+    Scope -->
+    <!-- ======================================================================
+    -->
+    <!-- Scope
+    validation on member variables -->
+    <!-- WRONG:
+    var $x = 5; -->
+    <!-- RIGHT:
+    public $x = 5; -->
+    <rule ref="Squiz.Scope.MemberVarScope"/>
+    <!-- Scope
+    validation on methods -->
+    <!-- WRONG:
+    function bar() {} -->
+    <!-- RIGHT:
+    public function bar {} -->
+    <rule ref="Squiz.Scope.MethodScope"/>
+    <!-- Check
+    that $this isn't used in static methods -->
+    <rule ref="Squiz.Scope.StaticThisUsage"/>
+    <!-- ======================================================================
+    -->
+    <!-- 4.
+    Code Analysis / Safe Coding -->
+    <!-- ======================================================================
+    -->
+    <!-- Reject
+    deprecated functions -->
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+    <!-- Reject
+    alias functions -->
+    <rule ref="Generic.PHP.ForbiddenFunctions"/>
+    <!-- Do
+    not allow '@statement' (e.g.: @mysql_connect()) to silence errors -->
+    <rule ref="Generic.PHP.NoSilencedErrors"/>
+    <!-- Do
+    not use 'eval' -->
+    <rule ref="Squiz.PHP.Eval"/>
+    <!-- No
+    functions inside functions (except closures) -->
+    <rule ref="Squiz.PHP.InnerFunctions"/>
+    <!-- Warns
+    about code that can never been executed. This happens when a function returns -->
+    <!-- before
+    the code, or a break ends execution of a statement etc. -->
+    <rule ref="Squiz.PHP.NonExecutableCode"/>
+    <!-- Ensures
+    no size-based functions are used in loop conditions to avoid unneccarry function calls -->
+    <rule ref="Squiz.PHP.DisallowSizeFunctionsInLoops"/>
+    <!-- Ensures
+    that there are no `error_log` and `print_r` function calls. -->
+    <!-- The
+    Sniff can be extended used to disallow any function -->
+    <rule ref="Squiz.PHP.DiscouragedFunctions"/>
+    <!--
+            2.4 Includes
+                    ============
+                            Check that the include_once is used in conditional situations.
+                                    Check that require_once is used elsewhere.
+                                            Check that brackets do not surround the file being included.
+                                                -->
+    <rule ref="PEAR.Files.IncludingFile"/>
+    <rule ref="PEAR.Files.IncludingFile.UseIncludeOnce">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.Files.IncludingFile.UseInclude">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.Files.IncludingFile.UseRequireOnce">
+        <severity>0</severity>
+    </rule>
+    <rule ref="PEAR.Files.IncludingFile.UseRequire">
+        <severity>0</severity>
+    </rule>
+    <!-- Statements
+    may not have an empty body. -->
+    <rule ref="Generic.CodeAnalysis.EmptyStatement">
+        <exclude name="Generic.CodeAnalysis.EmptyStatement.DetectedCATCH"/> <!-- empty catch statements are allowed -->
+    </rule>
+    <!-- All
+    'for' loops that could be simplified to a 'while' loop must be simplified. -->
+    <rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+    <!-- If-
+    and elseif-statements may not be unconditional. -->
+    <rule ref="Generic.CodeAnalysis.UnconditionalIfStatement"/>
+    <!-- Warn
+    if function parameter is not used in function -->
+    <!-- <rule
+        ref="Generic.CodeAnalysis.UnusedFunctionParameter"/> -->
+    <rule ref="Generic.CodeAnalysis.UnnecessaryFinalModifier"/>
+    <!--
+        <rule ref="Generic.CodeAnalysis.UselessOverridingMethod"/>
+            -->
+    <!-- ======================================================================
+    -->
+    <!-- 6.
+    Code Formatting -->
+    <!-- ======================================================================
+    -->
+    <!-- There
+    must only be one statement per line -->
+    <rule ref="Generic.Formatting.DisallowMultipleStatements"/>
+    <!-- No
+    Space after cast -->
+    <!-- WRONG:
+    $x = (string) 1; -->
+    <!-- RIGHT:
+    $x = (string)1; -->
+    <rule ref="Generic.Formatting.NoSpaceAfterCast"/>
+    <!-- ======================================================================
+    -->
+    <!-- RULES
+    TO CONSIDER -->
+    <!-- ======================================================================
+    -->
+    <rule ref="Squiz.Classes.ClassFileName"/>
+    <rule ref="Generic.Files.InlineHTML"/>
+    <rule ref="Generic.PHP.CharacterBeforePHPOpeningTag"/>
+    <rule ref="PEAR.Formatting.MultiLineAssignment"/>
+    <rule ref="PEAR.WhiteSpace.ObjectOperatorIndent"/>
+    <!--<rule ref="Squiz.Functions.GlobalFunction"/>-->
+    <rule ref="Squiz.Operators.IncrementDecrementUsage">
+        <exclude name="Squiz.Operators.IncrementDecrementUsage.NoBrackets"/><!-- afaik there is no need for brackets -->
+    </rule>
+    <rule ref="Squiz.PHP.GlobalKeyword"/>
+    <rule ref="Squiz.Strings.EchoedStrings"/>
+</ruleset>
