@@ -49,6 +49,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::INTEGER)]
     private int $loginCnt = 0;
 
+    #[ORM\Column(length: 255)]
+    private ?string $avatar = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -187,5 +190,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setConfirmationCode(?string $confirmationCode): void
     {
         $this->confirmationCode = $confirmationCode;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): void
+    {
+        $this->avatar = $avatar;
     }
 }

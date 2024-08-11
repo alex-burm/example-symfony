@@ -6,6 +6,7 @@ use App\Entity\Post;
 use App\EventListener\PostChangesEvent;
 use App\Form\PostType;
 use App\Repository\PostRepository;
+use App\Service\UploadService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -49,12 +50,19 @@ class PostController extends AbstractController
         EntityManagerInterface $entityManager,
         EventDispatcherInterface $dispatcher,
         TagAwareCacheInterface $cache,
+        UploadService $uploadService,
     ): Response {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $uploadService->saveFile(
+                $post,
+                $form,
+                'image',
+            );
+
             $entityManager->persist($post);
             $entityManager->flush();
 
@@ -85,20 +93,17 @@ class PostController extends AbstractController
         Post $post,
         EntityManagerInterface $entityManager,
         TagAwareCacheInterface $cache,
-        KernelInterface $kernel,
+        UploadService $uploadService,
     ): Response {
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile $file */
-            $uploadedFile = $form->get('image')->getData();
-            $file = $uploadedFile->move(
-                $kernel->getProjectDir() . '/public/uploads',
-                $uploadedFile->getClientOriginalName(),
+            $uploadService->saveFile(
+                $post,
+                $form,
+                'image',
             );
-
-            $post->setImage($file->getBasename());
 
             $entityManager->flush();
             $cache->invalidateTags(['posts']);

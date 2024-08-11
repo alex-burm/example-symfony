@@ -17,6 +17,7 @@
                             <input type="checkbox" id="all" />
                         </th>
                         <th>Id</th>
+                        <th>image</th>
                         <th>Name</th>
                         <th>Content</th>
                         <th>PublishedAt</th>
@@ -28,6 +29,11 @@
                         <tr>
                             <td><input type="checkbox" name="id[]" value="{{ post.id }}"></td>
                             <td>{{ post.id }}</td>
+                            <td width="100px">
+                                {% if post.image|length > 0 %}
+                                    <img src="{{ asset('uploads/post/' ~ post.image) }}" width="100px" />
+                                {% endif %}
+                            </td>
                             <td>{{ post.name }}</td>
                             <td>{{ post.content }}</td>
                             <td>{{ post.publishedAt ? post.publishedAt|date('Y-m-d H:i:s') : '' }}</td>

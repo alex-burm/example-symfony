@@ -29,3 +29,7 @@ services:
     App\EventListener\AppListener:
         tags:
             - { name: kernel.event_listener, event: kernel.request }
+
+    App\Service\UploadService:
+        arguments:
+            $uploadDirectory: "%kernel.project_dir%/public/uploads/"
