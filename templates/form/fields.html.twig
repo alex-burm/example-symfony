@@ -1,0 +1,41 @@
+{% block file_widget -%}
+    <input type="{{ type }}" style="display:none" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+
+    <div id="upload-zone" style="width:100%;height:200px;border: 1px dashed gray">
+
+    </div>
+    <script>
+        const uploadZone = document.querySelector('#upload-zone');
+        const inputFile = document.querySelector('#{{ id }}');
+        uploadZone.addEventListener('click', event => {
+            inputFile.click();
+        });
+
+        uploadZone.addEventListener('dragover', event => {
+            event.preventDefault();
+            uploadZone.style.opacity = 0.5;
+            uploadZone.style.borderColor = 'blue';
+        })
+
+        uploadZone.addEventListener('dragleave', event => {
+            event.preventDefault();
+            uploadZone.style.opacity = 1;
+            uploadZone.style.borderColor = 'gray';
+        })
+
+        uploadZone.addEventListener('drop', event => {
+            event.preventDefault();
+            inputFile.files = event.dataTransfer.files;
+            inputFile.dispatchEvent(new Event('change'));
+        })
+
+        document.querySelector('#{{ id }}').addEventListener('change', event => {
+            console.log(inputFile.files[0]);
+            let reader = new FileReader();
+            reader.onload = e => {
+                uploadZone.innerHTML = '<img src="' + e.target.result + '" width=100% height=100% />';
+            }
+            reader.readAsDataURL(inputFile.files[0])
+        });
+    </script>
+{%- endblock file_widget -%}
