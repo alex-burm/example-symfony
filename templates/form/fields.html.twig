@@ -2,8 +2,8 @@
     <input type="{{ type }}" style="display:none" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 
     <div id="upload-zone" style="width:100%;height:200px;border: 1px dashed gray">
-        {% if data is not empty %}
-            <img src="/uploads/post/{{ data.basename }}" style="height:100%;max-width: 200px;" />
+        {% if src is not empty %}
+            <img src="{{ src }}" style="height:100%;max-width: 200px;" />
         {% endif %}
     </div>
     <script>
