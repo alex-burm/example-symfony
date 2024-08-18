@@ -19,6 +19,7 @@ class UserType extends AbstractType
             ->add('email')
             ->add('avatar', FileType::class, [
                 'mapped' => false,
+                'required' => false,
                 'attr' => [
                     'accept' => 'image/png, image/jpeg, image/jpg, image/webp',
                 ],

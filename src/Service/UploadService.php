@@ -20,6 +20,9 @@ class UploadService
 
         /** @var UploadedFile $file */
         $uploadedFile = $form->get($property)->getData();
+        if (false === ($uploadedFile instanceof UploadedFile)) {
+            return;
+        }
 
         $file = $uploadedFile->move(
             $this->uploadDirectory . '/' . $entityName,
