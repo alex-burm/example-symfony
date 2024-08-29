@@ -14,7 +14,9 @@ class PostController extends AbstractController
     public function show(int $id, EntityManagerInterface $em): Response
     {
         $post = $em->getRepository(Post::class)->find($id);
-
+        if (\is_null($post)) {
+            throw $this->createNotFoundException();
+        }
         return $this->render('post/show.html.twig', [
             'post' => $post,
         ]);
