@@ -33,3 +33,8 @@ services:
     App\Service\UploadService:
         arguments:
             $uploadDirectory: "%kernel.project_dir%/public/uploads/"
+
+    app.menu_builder:
+        class: App\Menu\Builder
+        tags:
+            - { name: knp_menu.menu_builder, method: menu, alias: admin_menu }
