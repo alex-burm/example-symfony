@@ -22,13 +22,18 @@
                                 <p class="text-center">Duis mollis eget augue et lobortis. Nam nunc justo, aliquet sed condimentum vel, faucibus in dolor. Proin eleifend hendrerit rhoncus.</p>
 
                                 {{ form_start(form) }}
-
+                                    <input type="hidden" name="token" value=""/>
                                     {{ form_row(form.email) }}
                                     {{ form_row(form.name) }}
                                     {{ form_row(form.subject) }}
                                     {{ form_row(form.message) }}
 
-                                    <button type="submit" class="btn btn-primary">SEND</button>
+                                    <button type="submit"
+                                            class="btn btn-primary g-recaptcha"
+                                            data-sitekey="{{ captchaKey }}"
+                                            data-callback='onSubmit'
+                                            data-action='submit'
+                                    >SEND</button>
                                 {{ form_end(form) }}
 
                                 {#
@@ -84,4 +89,14 @@
             </div>
         </div>
     </section>
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://www.google.com/recaptcha/api.js"></script>
+    <script>
+        function onSubmit(token) {
+            document.querySelector('input[name="token"]').value = token;
+            document.querySelector('form[name="feedback_form"]').submit();
+        }
+    </script>
 {% endblock %}

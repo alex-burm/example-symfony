@@ -83,7 +83,11 @@ class DefaultController extends AbstractController
     ): Response {
         $form = $this->createForm(FeedbackForm::class);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+            && $this->captchaVerify($request->request->get('token'))
+        ) {
             $feedback = $form->getData();
 
             $em->persist($feedback);
@@ -110,6 +114,31 @@ class DefaultController extends AbstractController
         return $this->render('default/contact.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    protected function captchaVerify(string $token): bool
+    {
+        /**
+         * RL: https://www.google.com/recaptcha/api/siteverify METHOD: POST
+         *
+         * POST Parameter    Description
+         * secret    Required. The shared key between your site and reCAPTCHA.
+         * response    Required. The user response token provided by the reCAPTCHA client-side integration on your site.
+         * remoteip    Optional. The user's IP address
+         */
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://www.google.com/recaptcha/api/siteverify');
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, [
+            'secret' => $_ENV['CAPTCHA_SECRET'],
+            'response' => $token,
+        ]);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $data = json_decode($response, true);
+        return $data['success'];
     }
 
     public function categoriesWidget(EntityManagerInterface $em): Response
