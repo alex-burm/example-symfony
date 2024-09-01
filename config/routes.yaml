@@ -2,9 +2,13 @@ controllers:
     prefix:
         en: /
         ru: /ru
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
+    resource: ../src/Controller/*
+    exclude: ../src/Controller/Admin
+    type: attribute
+
+admin:
+    prefix: /admin
+    resource: ../src/Controller/Admin
     type: attribute
 
 lucky_show:

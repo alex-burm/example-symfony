@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
-#[Route('/admin/post')]
+#[Route('/post')]
 class PostController extends AbstractController
 {
     #[Route('/', name: 'app_admin_post_index', methods: ['GET'])]
