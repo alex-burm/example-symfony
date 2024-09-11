@@ -55,8 +55,8 @@ class PostType extends AbstractType
 
         $builder->get('publishedAt')->addModelTransformer(
             new CallbackTransformer(
-                function (\DateTimeImmutable $publishedAt) {
-                    return $publishedAt->format('d/m/Y');
+                function (?\DateTimeImmutable $publishedAt) {
+                    return $publishedAt?->format('d/m/Y');
                 },
                 function (string $publishedAt) {
                     return new \DateTimeImmutable($publishedAt);

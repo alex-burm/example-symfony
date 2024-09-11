@@ -208,7 +208,7 @@ class DefaultController extends AbstractController
 
         $posts = \array_map(function ($x) {
             $url = $this->generateUrl('post_show', [
-                'id' => $x['id'],
+                'slug' => $x['slug'],
             ]);
 
             $x['url'] = $url;

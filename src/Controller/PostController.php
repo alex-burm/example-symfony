@@ -10,13 +10,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class PostController extends AbstractController
 {
-    #[Route('/post/show/{id}', name: 'post_show')]
-    public function show(int $id, EntityManagerInterface $em): Response
+    #[Route('/post/{slug}', name: 'post_show')]
+    public function show(Post $post): Response
     {
-        $post = $em->getRepository(Post::class)->find($id);
-        if (\is_null($post)) {
-            throw $this->createNotFoundException();
-        }
         return $this->render('post/show.html.twig', [
             'post' => $post,
         ]);
