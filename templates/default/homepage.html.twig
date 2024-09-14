@@ -64,7 +64,11 @@
                             <div class="text-center">
                                 <img src="images/photo.jpg" alt="About Me" class="rounded-circle">
 
-                                <p>Quis vero phasellus hac nullam, in quam vitae duis adipiscing mauris leo, laoreet eget at quis, ante vestibulum vivamus vel. Sapien lobortis, eget orci purus amet pede, consectetur neque risus.</p>
+                                <p>
+                                    {{ render(controller('App\\Controller\\DefaultController::text', {
+                                        name: 'about_me'
+                                    })) }}
+                                </p>
                             </div>
 
                         </aside>

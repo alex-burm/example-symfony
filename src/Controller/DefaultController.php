@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\ContentPage;
 use App\Entity\Post;
 use App\Form\FeedbackForm;
 use App\Repository\PostRepository;
@@ -217,5 +218,26 @@ class DefaultController extends AbstractController
         }, $posts);
 
         return new JsonResponse($posts);
+    }
+
+    public function text(string $name, EntityManagerInterface $entityManager): Response
+    {
+        static $list = null;
+
+        if (\is_null($list)) {
+            $list = $entityManager->getRepository(ContentPage::class)->findAll();
+        }
+
+        $records = \array_filter(
+            $list,
+            static fn (ContentPage $x) => $x->getName() === $name
+        );
+
+        if (\count($records) === 0) {
+            return new Response;
+        }
+
+        $record = \current($records);
+        return new Response($record->getValue());
     }
 }
