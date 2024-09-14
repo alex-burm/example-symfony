@@ -1,0 +1,41 @@
+{% extends 'admin.html.twig' %}
+
+{% block title %}ContentPage index{% endblock %}
+
+{% block body %}
+<div class="col-lg-12">
+    <div class="ibox ">
+        <div class="ibox-title">
+            <h1>ContentPage index</h1>
+        </div>
+        <div class="ibox-content">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for content_page in content_pages %}
+                    <tr>
+                        <td>{{ content_page.id }}</td>
+                        <td>{{ content_page.name }}</td>
+                        <td>{{ content_page.value }}</td>
+                        <td>
+                            <a href="{{ path('app_admin_content_edit', {'id': content_page.id}) }}">edit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">no records found</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

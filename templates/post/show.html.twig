@@ -220,9 +220,7 @@
                             <div class="text-center">
                                 <img src="{{ asset("images/photo.jpg") }}" alt="About Me" class="rounded-circle">
 
-                                <p>{{ render(controller('App\\Controller\\DefaultController::text', {
-                                        name: 'about_me'
-                                    })) }}</p>
+                                <p>{{ getContentPage('about_me') }}</p>
                             </div>
 
                         </aside>

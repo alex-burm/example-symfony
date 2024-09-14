@@ -65,9 +65,7 @@
                                 <img src="images/photo.jpg" alt="About Me" class="rounded-circle">
 
                                 <p>
-                                    {{ render(controller('App\\Controller\\DefaultController::text', {
-                                        name: 'about_me'
-                                    })) }}
+                                    {{ getContentPage('about_me') }}
                                 </p>
                             </div>
 
