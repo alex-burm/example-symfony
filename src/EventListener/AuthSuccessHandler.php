@@ -3,16 +3,20 @@
 namespace App\EventListener;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationSuccessHandlerInterface;
 
 class AuthSuccessHandler implements AuthenticationSuccessHandlerInterface
 {
     public function __construct(
-        protected EntityManagerInterface $entityManager
+        protected EntityManagerInterface $entityManager,
+        protected Security $security,
+        protected RouterInterface $router,
     ) {
     }
 
@@ -24,6 +28,11 @@ class AuthSuccessHandler implements AuthenticationSuccessHandlerInterface
 
         $this->entityManager->flush();
 
-        return new RedirectResponse('/');
+        $redirectUrl = $this->router->generate('homepage');
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            $redirectUrl = $this->router->generate('admin_dashboard');
+        }
+
+        return new RedirectResponse($redirectUrl);
     }
 }
