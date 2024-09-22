@@ -6,6 +6,7 @@ use App\Repository\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
+use Gedmo\Mapping\Annotation\Translatable;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
@@ -20,6 +21,7 @@ class Post
 
     #[ORM\Column(length: 255)]
     #[Slug(fields: ['name'])]
+    #[Translatable]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT)]

@@ -39,6 +39,9 @@ services:
         tags:
             - { name: knp_menu.menu_builder, method: menu, alias: admin_menu }
 
+    app.slugguble.transliterator:
+        class: App\Service\Transliterator
+
     gedmo.mapping.driver.attribute:
         class: Gedmo\Mapping\Driver\AttributeReader
 
@@ -50,3 +53,4 @@ services:
             - { name: doctrine.event_listener, event: 'prePersist' }
         calls:
          - [ setAnnotationReader, [ '@gedmo.mapping.driver.attribute' ] ]
+         - [ setTransliterator, [ '@app.slugguble.transliterator' ] ]
