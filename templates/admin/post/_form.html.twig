@@ -23,6 +23,34 @@
     });
 
     $(function(){
-        $('#post_content').summernote();
+        const $summerNote = $('#post_content').summernote({
+            //Define the callback
+            callbacks: {
+                onImageUpload: function(files) {
+                    const file = files[0];
+
+                    let data = new FormData();
+                    data.append("file", file);
+
+                    $.ajax({
+                        data: data,
+                        type: "POST",
+                        url: "{{ path('admin_file_uploader') }}", //Your own back-end uploader
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function(response) {
+                            if (response.status && response.filename) {
+                                //$('.summernote').summernote('editor.insertImage', response.filename);
+                                let img = new Image;
+                                img.src = response.filename;
+
+                                $summerNote.summernote('insertNode', img);
+                            }
+                        }
+                    });
+                },
+            },
+        });
     })
 </script>

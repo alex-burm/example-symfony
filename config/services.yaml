@@ -32,7 +32,7 @@ services:
 
     App\Service\UploadService:
         arguments:
-            $uploadDirectory: "%kernel.project_dir%/public/uploads/"
+            $uploadDirectory: "%kernel.project_dir%/public/uploads"
 
     app.menu_builder:
         class: App\Menu\Builder

@@ -5,6 +5,7 @@ namespace App\Service;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpFoundation\File\File;
 
 class UploadService
 {
@@ -31,5 +32,15 @@ class UploadService
 
         $method = 'set' . \ucfirst($property);
         $entity->$method($file->getBasename());
+    }
+
+    public function saveUploadedFile(UploadedFile $uploadedFile): File
+    {
+        $file = $uploadedFile->move(
+            $this->uploadDirectory . '/editor',
+            $uploadedFile->getClientOriginalName(),
+        );
+
+        return $file;
     }
 }
