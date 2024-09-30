@@ -12,8 +12,7 @@
                     <article class="post">
 
                         <h5 class="text-center mt-0 mb-5 pb-3 text-uppercase"><b>About Me</b></h5>
-                        <div class="post-preview">
-                            <img src="{{ asset("images/blog/blog-5.jpg") }}" alt="" class="img-fluid rounded">
+                        <div class="post-preview" id="video-player">
                         </div>
 
                         <div class="blog-detail-description">
@@ -46,6 +45,12 @@
             </div>
 
         </div>
-        <!-- end container -->
     </section>
+
+    <script src='https://cdn.jsdelivr.net/npm/react-player/dist/ReactPlayer.standalone.js'></script>
+    <script>
+        const container = document.getElementById('video-player')
+        const url = 'https://vimeo.com/90509568'
+        renderReactPlayer(container, { url, playing: true })
+    </script>
 {% endblock %}
