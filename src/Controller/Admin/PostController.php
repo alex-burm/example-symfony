@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -46,36 +47,16 @@ class PostController extends AbstractController
 
     #[Route('/new', name: 'app_admin_post_new', methods: ['GET', 'POST'])]
     public function new(
-        Request $request,
         EntityManagerInterface $entityManager,
-        EventDispatcherInterface $dispatcher,
-        TagAwareCacheInterface $cache,
-        UploadService $uploadService,
     ): Response {
         $post = new Post();
-        $form = $this->createForm(PostType::class, $post);
-        $form->handleRequest($request);
+        $post->setName('Untitled post');
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $uploadService->saveFile(
-                $post,
-                $form,
-                'image',
-            );
+        $entityManager->persist($post);
+        $entityManager->flush();
 
-            $entityManager->persist($post);
-            $entityManager->flush();
-
-            $category = $post->getCategory();
-            $dispatcher->dispatch(new PostChangesEvent($category));
-
-            $cache->invalidateTags(['posts']);
-            return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('admin/post/new.html.twig', [
-            'post' => $post,
-            'form' => $form,
+        return $this->redirectToRoute('app_admin_post_edit', [
+            'id' => $post->getId(),
         ]);
     }
 
@@ -142,13 +123,16 @@ class PostController extends AbstractController
     public function deleteSelected(
         Request $request,
         EntityManagerInterface $entityManager,
-        TagAwareCacheInterface $cache
+        TagAwareCacheInterface $cache,
+        KernelInterface $kernel,
     ): Response {
         foreach ($request->request->all('id') as $id) {
             $post = $entityManager->find(Post::class, $id);
             if (false === \is_null($post)) {
                 $entityManager->remove($post);
             }
+
+            $this->deleteImages($post, $kernel->getProjectDir() . '/public');
         }
 
         $cache->invalidateTags(['posts']);
@@ -159,5 +143,28 @@ class PostController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    /**
+     * @param Post   $post
+     * @param string $publicDir
+     * @return void
+     */
+    protected function deleteImages(Post $post, string $publicDir): void
+    {
+        $postFolder = $publicDir . '/uploads/editor/' . $post->getId();
+        if (file_exists($postFolder)) {
+            $filesystem = new Filesystem();
+            $filesystem->remove($postFolder);
+        }
+
+//        $content = $post->getContent();
+//        preg_match_all('/img\s+src="([\s\S]*?)"/', $content, $matches);
+//        foreach ($matches[1] as $imageUrl) {
+//            $filepath = $publicDir . $imageUrl;
+//            if (file_exists($filepath)) {
+//                unlink($filepath);
+//            }
+//        }
     }
 }
