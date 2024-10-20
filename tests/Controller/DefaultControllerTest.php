@@ -59,4 +59,13 @@ class DefaultControllerTest extends WebTestCase
 
         $this->assertEquals($expected, $actual);
     }
+
+    public function testExceptionTest()
+    {
+        $client = self::createClient();
+        $client->catchExceptions(false);
+
+        $this->expectException(\Exception::class);
+        $client->request('GET', '/test-exception');
+    }
 }

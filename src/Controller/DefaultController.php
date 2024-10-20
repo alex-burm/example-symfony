@@ -240,4 +240,10 @@ class DefaultController extends AbstractController
         $record = \current($records);
         return new Response($record->getValue());
     }
+
+    #[Route('/test-exception')]
+    public function testException()
+    {
+        throw new \Exception('Something went wrong');
+    }
 }
