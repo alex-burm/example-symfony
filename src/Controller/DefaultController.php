@@ -244,6 +244,6 @@ class DefaultController extends AbstractController
     #[Route('/test-exception')]
     public function testException()
     {
-        throw new \Exception('Something went wrong');
+        throw new \Exception('Something went wrong', 999);
     }
 }
