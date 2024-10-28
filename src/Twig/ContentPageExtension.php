@@ -4,7 +4,9 @@ namespace App\Twig;
 
 use App\Entity\ContentPage;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -13,6 +15,8 @@ class ContentPageExtension extends AbstractExtension
 {
     public function __construct(
         protected EntityManagerInterface $entityManager,
+        protected Security $security,
+        protected Environment $twig,
     ) {
     }
 
@@ -47,6 +51,13 @@ class ContentPageExtension extends AbstractExtension
         }
 
         $record = \current($records);
-        return $record->getValue();
+
+        if (\is_null($this->security->getUser())) {
+            return $record->getValue();
+        }
+
+        return $this->twig->render('shared/contentPage.html.twig', [
+            'record' => $record,
+        ]);
     }
 }

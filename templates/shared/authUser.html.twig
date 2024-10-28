@@ -1,0 +1,28 @@
+<div class="alert alert-primary d-flex justify-content-between fixed-top" role="alert">
+    <span>
+        You are logged as <a class="alert-link" href="{{ path('admin_dashboard') }}">{{ app.user }}</a>!
+    </span>
+
+    <span>
+        <a href="{{ path('app_admin_content_save') }}" onclick="return saveContent(this)" class="alert-link">Save</a>
+    </span>
+</div>
+<script>
+    function saveContent(element) {
+        const values = {};
+        for (let item of document.querySelectorAll('[data-content-page]')) {
+            values[item.dataset.contentPage] = item.innerHTML;
+        }
+
+        fetch(element.href, {
+            method: 'POST',
+            body: JSON.stringify(values)
+        }).then(result => {
+            return result.json();
+        }).then(json => {
+            console.log(json);
+        })
+
+        return false;
+    }
+</script>

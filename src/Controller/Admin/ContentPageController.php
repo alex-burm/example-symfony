@@ -7,6 +7,7 @@ use App\Form\ContentPageType;
 use App\Repository\ContentPageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,6 +38,27 @@ final class ContentPageController extends AbstractController
         return $this->render('admin/content_page/edit.html.twig', [
             'content_page' => $contentPage,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/save-content', name: 'app_admin_content_save', methods: ['POST'])]
+    public function saveContent(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $values = $request->getPayload()->all();
+
+        foreach ($values as $k => $v) {
+            $record = $entityManager->getRepository(ContentPage::class)->findOneBy([
+                'name' => $k,
+            ]);
+
+            if (false === \is_null($record)) {
+                $record->setValue($v);
+                $entityManager->flush();
+            }
+        }
+
+        return new JsonResponse([
+            'success' => true,
         ]);
     }
 }

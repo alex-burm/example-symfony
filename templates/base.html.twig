@@ -29,6 +29,9 @@
         {% endblock %}
     </head>
     <body>
+        {% if app.user %}
+            {% include 'shared/authUser.html.twig' %}
+        {% endif %}
         <div id="wrapper">
             <!-- Top Bar Start -->
             <div class="topbar-mobile">
