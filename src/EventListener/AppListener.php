@@ -9,12 +9,20 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 class AppListener
 {
+    /**
+     * @param Security               $security
+     * @param EntityManagerInterface $entityManager
+     */
     public function __construct(
         protected Security $security,
         protected EntityManagerInterface $entityManager,
     ) {
     }
 
+    /**
+     * @param RequestEvent $event
+     * @return void
+     */
     public function onKernelRequest(RequestEvent $event): void
     {
         if (false === $event->isMainRequest()) {

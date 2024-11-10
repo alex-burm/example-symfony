@@ -11,13 +11,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DefaultController extends AbstractController
 {
-    #[Route('/', name: "admin_dashboard")]
+    #[Route('/', name: 'admin_dashboard')]
     public function index(): Response
     {
         return $this->render('admin/default/index.html.twig');
     }
 
-    #[Route('/file-uploader', name: "admin_file_uploader")]
+    #[Route('/file-uploader', name: 'admin_file_uploader')]
     public function fileUploader(Request $request, UploadService $uploadService): Response
     {
         try {

@@ -28,7 +28,7 @@ class FileTypeExtension extends AbstractTypeExtension
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if (false === \array_key_exists('property', $options)) {
-            return ;
+            return;
         }
 
         $parentData = $form->getParent()->getData();

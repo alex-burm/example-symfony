@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Attribute\Route;
@@ -76,6 +77,12 @@ class DefaultController extends AbstractController
         return $this->render('default/about.html.twig');
     }
 
+    /**
+     * @param Request                $request
+     * @param EntityManagerInterface $em
+     * @param MailerInterface        $mailer
+     * @return Response
+     */
     #[Route('/contact', name: 'contact')]
     public function contact(
         Request $request,
@@ -84,8 +91,7 @@ class DefaultController extends AbstractController
     ): Response {
         $form = $this->createForm(FeedbackForm::class);
         $form->handleRequest($request);
-        if (
-            $form->isSubmitted()
+        if ($form->isSubmitted()
             && $form->isValid()
             && $this->captchaVerify($request->request->get('token'))
         ) {

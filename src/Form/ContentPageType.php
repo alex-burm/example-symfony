@@ -13,8 +13,7 @@ class ContentPageType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('value')
-        ;
+            ->add('value');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -26,7 +26,7 @@ class MaintenanceSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event): void
     {
-        $isEnabled = (bool) $_ENV['MAINTENANCE_MODE'];
+        $isEnabled = (bool)$_ENV['MAINTENANCE_MODE'];
 
         if ($isEnabled && false === $this->security->isGranted('ROLE_ADMIN')) {
             $response = new Response(

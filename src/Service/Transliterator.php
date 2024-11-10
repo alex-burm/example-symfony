@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Service;
+
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 class Transliterator
