@@ -1,17 +1,17 @@
-{{ form_start(form) }}
+{{ form_start(form, { attr: {id: 'post-form'}}) }}
     {{ form_widget(form) }}
-
-    <div class="form-group row">
-        <div class="col-lg-4 col-lg-offset-2">
-            <a class="btn btn-white btn-sm" href="{{ path('app_admin_post_index') }}">back to list</a>
-            <button class="btn btn-primary btn-sm" type="submit">{{ button_label|default('Save') }}</button>
-
-            {% if post.id > 0 %}
-                {{ include('admin/post/_delete_form.html.twig') }}
-            {% endif %}
-        </div>
-    </div>
 {{ form_end(form) }}
+
+<div class="form-group row">
+    <div class="col-lg-4 col-lg-offset-2">
+        <a class="btn btn-white btn-sm" href="{{ path('app_admin_post_index') }}">back to list</a>
+        <button class="btn btn-primary btn-sm" form="post-form" type="submit">{{ button_label|default('Save') }}</button>
+
+        {% if post.id > 0 %}
+            {{ include('admin/post/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+</div>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>

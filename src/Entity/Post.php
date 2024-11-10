@@ -7,10 +7,16 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation\Slug;
 use Gedmo\Mapping\Annotation\Translatable;
+use Gedmo\Mapping\Annotation\SoftDeleteable;
+use Gedmo\Mapping\Annotation\Timestampable;
+use Gedmo\SoftDeleteable\Traits\SoftDeleteableEntity;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[SoftDeleteable(fieldName: 'deletedAt')]
 class Post
 {
+    use SoftDeleteableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -29,6 +35,10 @@ class Post
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    #[Timestampable]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne]
     private ?Category $category = null;

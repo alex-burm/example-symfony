@@ -113,7 +113,10 @@ class PostController extends AbstractController
             $entityManager->flush();
 
             $cache->invalidateTags(['posts']);
-            $dispatcher->dispatch(new PostChangesEvent($category));
+
+            if (false === \is_null($category)) {
+                $dispatcher->dispatch(new PostChangesEvent($category));
+            }
         }
 
         return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
