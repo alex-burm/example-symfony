@@ -5,13 +5,14 @@ namespace App\Tests\Controller\Admin;
 use App\Repository\UserRepository;
 use App\Service\ExportInterface;
 use App\Service\ExportSerialize;
+use PHPUnit\Framework\Attributes\Depends;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class PostControllerTest extends WebTestCase
 {
-    public function testEditContent(): void
+    public function testEditContent(): int
     {
         $client = static::createClient();
 
@@ -29,6 +30,11 @@ class PostControllerTest extends WebTestCase
         $crawler = $client->followRedirect();
         $this->assertResponseIsSuccessful();
 
+        // http://localhost:9090/admin/post/1063/edit
+        $uri = $client->getRequest()->getUri();
+        $params = \explode('/', $uri);
+        $postId = (int)$params[\count($params) - 2];
+
         $btnNode = $crawler->selectButton('Update');
         $form = $btnNode->form([
             'post[name]' => 'PhpUnit post name 2',
@@ -40,6 +46,8 @@ class PostControllerTest extends WebTestCase
         $form['post[image]']->upload($dir . '/test-photo.jpg');
 
         $client->submit($form);
+
+        return $postId;
     }
 
     public function testFileUploader()
@@ -66,4 +74,23 @@ class PostControllerTest extends WebTestCase
         $content = json_decode($client->getResponse()->getContent(), true);
         $this->assertTrue($content['status']);
     }
+
+    #[Depends('testEditContent')]
+    public function testDelete(int $postId): void
+    {
+        $client = static::createClient();
+
+        $user = self::getContainer()->get(UserRepository::class)
+            ->findOneByLogin('admin');
+
+        $client->loginUser($user);
+
+        $uri = '/admin/post/' . $postId . '/edit';
+        $crawler = $client->request('GET', $uri);
+        $btn = $crawler->selectButton('Delete');
+        $client->submit($btn->form([]));
+
+        $this->assertResponseRedirects('/admin/post/');
+    }
+
 }
