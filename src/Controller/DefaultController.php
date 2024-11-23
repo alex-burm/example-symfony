@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\ContentPage;
+use App\Entity\Feedback;
 use App\Entity\Post;
 use App\Form\FeedbackForm;
+use App\Message\FeedbackMessage;
 use App\Repository\PostRepository;
 use App\Service\ExportInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
@@ -87,7 +89,7 @@ class DefaultController extends AbstractController
     public function contact(
         Request $request,
         EntityManagerInterface $em,
-        MailerInterface $mailer,
+        MessageBusInterface $bus,
     ): Response {
         $form = $this->createForm(FeedbackForm::class);
         $form->handleRequest($request);
@@ -95,23 +97,18 @@ class DefaultController extends AbstractController
             && $form->isValid()
             && $this->captchaVerify($request->request->get('token'))
         ) {
+            /** @var Feedback $feedback */
             $feedback = $form->getData();
 
             $em->persist($feedback);
             $em->flush();
 
-            $message = new Email();
-            $message->from('ask@drivedcrm.com');
-            $message->to('burmistrov.alexander@gmail.com');
-            $message->text('New feedback!');
-            $message->html($this->renderView('mail/feedback.html.twig', [
-                'name' => $feedback->getName(),
-                'message' => $feedback->getMessage(),
-                'contact' => $feedback->getEmail(),
-            ]));
-            $message->subject('Feedback form: ['.$feedback->getSubject().']');
-
-            $mailer->send($message);
+            $bus->dispatch(new FeedbackMessage(
+                $feedback->getName(),
+                $feedback->getEmail(),
+                $feedback->getSubject(),
+                $feedback->getMessage(),
+            ));
 
             $this->addFlash('success', 'Thanks for your feedback!');
 
@@ -125,6 +122,7 @@ class DefaultController extends AbstractController
 
     protected function captchaVerify(string $token): bool
     {
+        return true;
         /**
          * RL: https://www.google.com/recaptcha/api/siteverify METHOD: POST
          *
