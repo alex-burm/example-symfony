@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
+use App\Entity\Tag;
 use App\EventListener\PostChangesEvent;
 use App\Form\PostType;
 use App\Repository\PostRepository;
@@ -92,9 +93,11 @@ class PostController extends AbstractController
             return $this->redirectToRoute('app_admin_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        $tags = $entityManager->getRepository(Tag::class)->findAll();
         return $this->render('admin/post/edit.html.twig', [
             'post' => $post,
             'form' => $form,
+            'tags' => $tags,
         ]);
     }
 

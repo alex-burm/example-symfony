@@ -29,6 +29,13 @@
 </div>
 <div class="mb-3">
     <h3>Tags:</h3>
+
+    <select id="select-state" multiple>
+        {% for tag in tags %}
+        <option {{ post.tags.contains(tag) ? 'selected' }}>{{ tag.name }}</option>
+        {% endfor %}
+    </select>
+    {#
     <ul id="tags"
         data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}"
         data-index="{{ form.tags|length }}"
@@ -43,6 +50,7 @@
     {% endfor %}
     </ul>
     <button type="button" class="btn" onclick="addTag()">add new tag</button>
+    #}
 </div>
 {{ form_end(form) }}
 
@@ -59,6 +67,20 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/css/datepicker.min.css">
 <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.3.4/dist/js/datepicker-full.min.js"></script>
+
+<link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+        integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+/>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+        integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+></script>
 
 <script>
     const elem = document.querySelector('#post_publishedAt');
@@ -112,4 +134,22 @@
     function delTag(btn) {
         btn.closest('li').remove();
     }
+
+    const eventHandler = function() {
+        return () => {
+            document.querySelector('#post_tags').value
+                = Object.values(
+                    document.querySelectorAll('#select-state option')
+                ).map(el => el.value).join(',')
+        }
+    };
+
+    var $select = $('#select-state').selectize({
+        create          : true,
+        onChange        : eventHandler('onChange'),
+        onItemAdd       : eventHandler('onItemAdd'),
+        onItemRemove    : eventHandler('onItemRemove'),
+        onOptionAdd     : eventHandler('onOptionAdd'),
+        onOptionRemove  : eventHandler('onOptionRemove'),
+    });
 </script>
