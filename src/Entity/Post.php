@@ -45,7 +45,7 @@ class Post
     #[ORM\ManyToOne]
     private ?Category $category = null;
 
-    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'posts')]
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'posts', cascade: ['persist', 'remove'])]
     #[ORM\JoinTable(name: 'post_has_tag')]
     private Collection $tags;
 
@@ -62,6 +62,21 @@ class Post
         return $this->tags;
     }
 
+    public function addTag(Tag $tag): self
+    {
+        if (false === $this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if (true === $this->tags->contains($tag)) {
+            $this->tags->removeElement($tag);
+        }
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;

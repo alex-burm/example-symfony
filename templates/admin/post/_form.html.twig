@@ -1,5 +1,49 @@
 {{ form_start(form, { attr: {id: 'post-form'}}) }}
-    {{ form_widget(form) }}
+{#  {{ form_widget(form) }}#}
+
+<div class="mb-3">
+    {{ form_label(form.image) }}
+    {{ form_widget(form.image) }}
+    {{ form_errors(form.image) }}
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.name) }}
+    {{ form_widget(form.name) }}
+    {{ form_errors(form.name) }}
+</div>
+<div class="mb-3">
+    {{ form_label(form.category) }}
+    {{ form_widget(form.category) }}
+    {{ form_errors(form.category) }}
+</div>
+<div class="mb-3">
+    {{ form_label(form.content) }}
+    {{ form_widget(form.content) }}
+    {{ form_errors(form.content) }}
+</div>
+<div class="mb-3">
+    {{ form_label(form.publishedAt) }}
+    {{ form_widget(form.publishedAt) }}
+    {{ form_errors(form.publishedAt) }}
+</div>
+<div class="mb-3">
+    <h3>Tags:</h3>
+    <ul id="tags"
+        data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}"
+        data-index="{{ form.tags|length }}"
+    >
+    {% for tagForm in form.tags %}
+        <li>
+            {{ form_label(tagForm.name) }}
+            {{ form_widget(tagForm.name) }}
+            {{ form_errors(tagForm.name) }}
+            <button type="button" class="btn" onclick="delTag(this)">[X]</button>
+        </li>
+    {% endfor %}
+    </ul>
+    <button type="button" class="btn" onclick="addTag()">add new tag</button>
+</div>
 {{ form_end(form) }}
 
 <div class="form-group row">
@@ -53,4 +97,19 @@
             },
         });
     })
+
+    function addTag()
+    {
+        const tags = document.querySelector('#tags');
+        const li = document.createElement('li');
+        const index = tags.dataset.index;
+        li.innerHTML = tags.dataset.prototype.replaceAll('__name__', index);
+        tags.append(li);
+
+        tags.dataset.index++;
+    }
+
+    function delTag(btn) {
+        btn.closest('li').remove();
+    }
 </script>
