@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\Post;
+use App\Entity\Tag;
+use Doctrine\ORM\Mapping\Entity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -31,6 +33,11 @@ class PostType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'id',
+            ])
+            ->add('tags', EntityType::class, [
+                'class' => Tag::class,
+                'multiple' => true,
+                'expanded' => true,
             ])
             ->add('image', FileType::class, [
                 'mapped' => false,
