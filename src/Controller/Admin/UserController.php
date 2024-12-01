@@ -68,7 +68,6 @@ class UserController extends AbstractController
         Request $request,
         User $user,
         EntityManagerInterface $entityManager,
-        KernelInterface $kernel,
         UploadService $uploadService,
     ): Response {
         $form = $this->createForm(UserType::class, $user);
@@ -81,8 +80,11 @@ class UserController extends AbstractController
                 'avatar',
             );
 
+            $profile = $user->getProfile();
+            if ($profile?->isEmpty()) {
+                $entityManager->remove($profile);
+            }
             $entityManager->flush();
-
             return $this->redirectToRoute('app_admin_user_index', [], Response::HTTP_SEE_OTHER);
         }
 

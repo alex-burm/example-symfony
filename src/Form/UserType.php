@@ -37,6 +37,10 @@ class UserType extends AbstractType
                     ]),
                 ],
             ]);
+
+        $builder->add('profile', ProfileForm::class, [
+            'required' => false,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
