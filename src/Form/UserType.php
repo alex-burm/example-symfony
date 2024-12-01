@@ -23,6 +23,7 @@ class UserType extends AbstractType
                 'attr' => [
                     'accept' => 'image/png, image/jpeg, image/jpg, image/webp',
                 ],
+                'property' => 'avatar',
                 'constraints' => [
                     new File([
                         'maxSize' => '2000k',

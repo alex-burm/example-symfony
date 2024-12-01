@@ -1,9 +1,9 @@
 {% block file_widget -%}
     <input type="{{ type }}" style="display:none" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
 
-    <div id="upload-zone" style="width:100%;height:200px;border: 1px dashed gray">
+    <div id="upload-zone" style="max-width: 200px;min-width:100px;border: 1px dashed gray">
         {% if src is not empty %}
-            <img src="{{ src }}" style="height:100%;max-width: 200px;" />
+            <img src="{{ src }}" style="max-width: 200px;" />
         {% endif %}
     </div>
     <script>
