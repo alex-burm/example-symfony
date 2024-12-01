@@ -1,0 +1,16 @@
+{% extends 'admin.html.twig' %}
+
+{% block title %}Edit Product{% endblock %}
+
+{% block body %}
+    <div class="col-lg-12">
+        <div class="ibox ">
+            <div class="ibox-title">
+                <h1>Edit Product</h1>
+            </div>
+            <div class="ibox-content">
+                {{ include('admin/product/_form.html.twig', {'button_label': 'Update'}) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{{ form_start(form, { attr: {id: 'product-form'}}) }}
+
+<div class="mb-3">
+    {{ form_label(form.name) }}
+    {{ form_widget(form.name) }}
+    {{ form_errors(form.name) }}
+</div>
+
+<div class="panel-body">
+    <div class="table-responsive">
+        <table class="table table-stripped table-bordered">
+            <thead>
+            <tr>
+                <th>
+                    Attribute
+                </th>
+                <th>
+                    Value
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+            </thead>
+            <tbody id="attributes" data-index="{{ form.productValue|length }}">
+            {% for formValue in form.productValue %}
+            <tr>
+                <td>
+                    {{ form_widget(formValue.attribute) }}
+                </td>
+                <td>
+                    {{ form_widget(formValue.value) }}
+                </td>
+                <td>
+                    <button type="button" onclick="delAttr(this)" class="btn btn-white"><i class="fa fa-trash"></i> </button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <a href="#" onclick="addAttr()">add attribute</a>
+    </div>
+
+</div>
+
+{{ form_end(form) }}
+
+<div class="form-group row">
+    <div class="col-lg-4 col-lg-offset-2">
+        <a class="btn btn-white btn-sm" href="{{ path('app_admin_product_index') }}">back to list</a>
+        <button class="btn btn-primary btn-sm" form="product-form" type="submit">{{ button_label|default('Save') }}</button>
+
+        {% if product.id > 0 %}
+            {{ include('admin/product/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function delAttr(btn) {
+        btn.closest('tr').remove();
+    }
+
+    function addAttr() {
+        const tbody = document.querySelector('#attributes');
+        tbody.insertAdjacentHTML('beforeend', tbody.querySelector('tr').outerHTML);
+
+        const tr = tbody.querySelector('tr:last-child');
+        tr.querySelectorAll('input,select,textarea').forEach(el => {
+            el.name = el.name.replace('[0]', `[${tbody.dataset.index}]`)
+            el.value = '';
+        })
+
+        tbody.dataset.index++;
+    }
+</script>
