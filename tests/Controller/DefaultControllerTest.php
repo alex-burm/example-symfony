@@ -33,6 +33,9 @@ class DefaultControllerTest extends WebTestCase
 
         // проверяем на текст в заголовке
         $this->assertSelectorTextContains('h2', 'Welcome, Symfony community!');
+
+        $client->xmlHttpRequest('GET', '/');
+        $this->assertResponseIsSuccessful();
     }
 
     public function testExportService()
