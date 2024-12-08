@@ -38,7 +38,7 @@ class FileTypeExtension extends AbstractTypeExtension
         $partsOfClassName = \explode('\\', \get_class($parentData));
         $entityName = \strtolower(\array_pop($partsOfClassName));
 
-        if (\strlen($value) > 0) {
+        if (\strlen($value ?? '') > 0) {
             $view->vars['src'] = '/uploads/' . $entityName . '/' . $value;
         } else {
             $view->vars['src'] = '';

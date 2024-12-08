@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Repository\PostRepository;
 use App\Service\ExportInterface;
 use App\Service\ExportSerialize;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -13,6 +14,16 @@ class DefaultControllerTest extends WebTestCase
         // "client" клиент это наш тестовый браузер
         // через который мы будем делать запросы
         $client = static::createClient();
+
+//        $repository = $this->getMockBuilder(PostRepository::class)
+//            ->disableOriginalConstructor()
+//            ->onlyMethods(['getPostListQuery'])
+//            ->getMock();
+//
+//        $repository->method('getPostListQuery')
+//            ->willThrowException(new \Exception('phpunit hello Alex!'));
+//
+//        self::getContainer()->set(PostRepository::class, $repository);
 
         // послать GET запрос на главную страницу
         $crawler = $client->request('GET', '/');
@@ -69,5 +80,29 @@ class DefaultControllerTest extends WebTestCase
         $this->expectExceptionMessage('Something went wrong');
         $this->expectExceptionCode(999);
         $client->request('GET', '/test-exception');
+    }
+
+    public function testFakeExport()
+    {
+        $client = static::createClient();
+
+        $exporter = $this->getMockBuilder(ExportSerialize::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['run'])
+            ->getMock();
+
+        $file = '/tmp/1.txt';
+        file_put_contents($file, 'hello Alex!');
+
+        $exporter->method('run')
+            ->willReturn($file);
+
+        self::getContainer()->set(ExportInterface::class, $exporter);
+
+        $client->request('GET', '/export');
+        $this->assertResponseIsSuccessful();
+
+        $this->expectOutputString('hello Alex!');
+        $client->getResponse()->sendContent();
     }
 }

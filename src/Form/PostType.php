@@ -81,7 +81,7 @@ class PostType extends AbstractType
             $post = $event->getData();
             $form = $event->getForm();
 
-            $names = \array_map(trim(...), \explode(',', $form->get('tags')->getData()));
+            $names = \array_map(trim(...), \explode(',', $form->get('tags')->getData() ?? ''));
             $post->getTags()->clear();
             foreach ($names as $name) {
                 $tag = $this->entityManager->getRepository(Tag::class)->findOneBy([

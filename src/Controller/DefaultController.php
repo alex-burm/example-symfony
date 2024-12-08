@@ -29,38 +29,26 @@ class DefaultController extends AbstractController
 {
     public const LIMIT = 5;
 
+    public function __construct(
+        protected EntityManagerInterface $entityManager,
+        protected PaginatorInterface $paginator,
+    ) {
+    }
+
     #[Route('/', name: 'homepage')]
     public function homepage(
         Request $request,
-        EntityManagerInterface $em,
-        PaginatorInterface $paginator,
         TagAwareCacheInterface $cache,
     ): Response {
-        if ($request->query->has('keyword')) {
-            $query = $em->getRepository(Post::class)
-                ->getPostListQuery($request->query->get('keyword'));
+        $keyword = $request->query->getString('keyword');
+        $page = $request->query->getInt('page', 1);
 
-            $posts = $paginator->paginate(
-                $query,
-                max(0, $request->get('page', 1)),
-                self::LIMIT
-            );
-        } else {
-            $posts = $cache->get('post_list', function (ItemInterface $item) use ($em, $paginator) {
-                $query = $em->getRepository(Post::class)
-                    ->getPostListQuery();
-
-                $posts = $paginator->paginate(
-                    $query,
-                    1,
-                    self::LIMIT
-                );
-
-                $item->tag('posts');
-
-                return $posts;
-            });
-        }
+        $cacheKey = 'post_list-' . $keyword . '-' . $page;
+        $posts = $cache->get($cacheKey, function (ItemInterface $item) use ($keyword, $page) {
+            $data = $this->getPostList($keyword, $page);
+            $item->tag('posts');
+            return $data;
+        });
 
         if ($request->isXmlHttpRequest()) {
             return $this->render('default/_posts.html.twig', [
@@ -71,6 +59,18 @@ class DefaultController extends AbstractController
         return $this->render('default/homepage.html.twig', [
             'posts' => $posts,
         ]);
+    }
+
+    protected function getPostList(string $keyword, int $page)
+    {
+        $query = $this->entityManager->getRepository(Post::class)
+            ->getPostListQuery($keyword);
+
+        return $this->paginator->paginate(
+            $query,
+            max(0, $page),
+            self::LIMIT
+        );
     }
 
     #[Route('/about', name: 'about')]
