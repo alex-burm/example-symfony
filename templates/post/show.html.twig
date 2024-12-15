@@ -95,107 +95,31 @@
                                 </div>
                             </div>
 
+                            {% if comments|length > 0 %}
                             <div class="mt-5">
                                 <h5 class="page-title-alt"><span>Comments</span></h5>
                             </div>
 
                             <ul class="media-list list-unstyled">
-
+                                {% for comment in comments %}
                                 <li class="media">
-                                    <img class="d-flex mr-3 rounded-circle" src="{{ asset("images/user/user-5.png") }}" alt="Generic placeholder image">
                                     <div class="media-body">
-                                        <a href="#" class="text-custom reply-btn"><i class="mdi mdi-reply"></i>&nbsp; Reply</a>
-                                        <h4 class="media-heading"><a href="#">Michelle Durant</a></h4>
-                                        <p class="text-muted post-date">Jun 23, 2019, 11:45 am</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
+                                        <h4 class="media-heading"><a href="#">{{ comment.name }}</a></h4>
+                                        <p class="text-muted post-date">{{ comment.createdAt|format_date }}</p>
+                                        <p>{{ comment.message|nl2br }}</p>
                                     </div>
                                 </li>
-
-                                <li class="media">
-                                    <img class="d-flex mr-3 rounded-circle" src="{{ asset("images/user/user-2.png") }}" alt="Generic placeholder image">
-                                    <div class="media-body">
-                                        <a href="#" class="text-custom reply-btn"><i class="mdi mdi-reply"></i>&nbsp; Reply</a>
-                                        <h4 class="media-heading"><a href="#">Ronda Otoole</a></h4>
-                                        <p class="text-muted post-date">Jun 23, 2019, 11:45 am</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-
-                                        <div class="media">
-                                            <img class="d-flex mr-3 rounded-circle" src="{{ asset("images/user/user-3.png") }}" alt="Generic placeholder image">
-                                            <div class="media-body">
-                                                <a href="#" class="text-custom reply-btn"><i class="mdi mdi-reply"></i>&nbsp; Reply</a>
-                                                <h4 class="media-heading"><a href="#">James Whitley</a></h4>
-                                                <p class="text-muted post-date">Jun 23, 2019, 11:45 am</p>
-                                                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li class="media">
-                                    <img class="d-flex mr-3 rounded-circle" src="{{ asset("images/user/user-4.png") }}" alt="Generic placeholder image">
-                                    <div class="media-body">
-                                        <a href="#" class="text-custom reply-btn"><i class="mdi mdi-reply"></i>&nbsp; Reply</a>
-                                        <h4 class="media-heading"><a href="#">Kimberly Chretien</a></h4>
-                                        <p class="text-muted post-date">Jun 23, 2019, 11:45 am</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                                    </div>
-                                </li>
-
-                                <li class="media">
-                                    <img class="d-flex mr-3 rounded-circle" src="{{ asset("images/user/user-6.png") }}" alt="Generic placeholder image">
-                                    <div class="media-body">
-                                        <a href="#" class="text-custom reply-btn"><i class="mdi mdi-reply"></i>&nbsp; Reply</a>
-                                        <h4 class="media-heading"><a href="#">Michelle Durant</a></h4>
-                                        <p class="text-muted post-date">Jun 23, 2019, 11:45 am</p>
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam viverra euismod odio, gravida pellentesque urna varius vitae. Sed dui lorem, adipiscing in adipiscing et, interdum nec metus. Mauris ultricies, justo eu convallis placerat, felis enim.</p>
-                                    </div>
-                                </li>
-
+                                {% endfor %}
                             </ul>
+                            {% endif %}
 
                             <div class="mt-5">
                                 <h5 class="page-title-alt"><span>Leave a reply</span></h5>
                             </div>
 
-                            <form action="#" method="post" class="mt-4">
-                                <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <input id="author" class="form-control" placeholder="Name*" name="author" type="text" required="">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-6">
-                                        <div class="form-group">
-                                            <input id="email" class="form-control" placeholder="Email*" name="email" type="text" required="">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <input id="subject" class="form-control" placeholder="Website" name="subject" type="text">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <textarea id="comment" class="form-control" rows="5" placeholder="Your Message*" name="comment" required=""></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <div class="form-group">
-                                            <button name="submit" type="submit" id="submit" class="btn btn-dark">Post Comment</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </form>
-
+                            {{ render(controller('App\\Controller\\PostController::postComment', {
+                                post
+                            })) }}
                         </div>
 
                     </article>

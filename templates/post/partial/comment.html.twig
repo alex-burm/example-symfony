@@ -1,0 +1,62 @@
+<form action="{{ path('post_comment', {slug: post.slug}) }}" method="post" class="mt-4" onsubmit="return onSubmit(this)">
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_widget(form.name, {
+                    attr: {
+                        placeholder: 'Name*',
+                    }
+                }) }}
+                {{ form_errors(form.name) }}
+            </div>
+        </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                {{ form_widget(form.email, {
+                    attr: {
+                        placeholder: 'Email*'
+                    }
+                }) }}
+                {{ form_errors(form.email) }}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                {{ form_widget(form.message, {
+                    attr: {
+                        rows: 5,
+                        placeholder: 'Your Message*',
+                    }
+                }) }}
+                {{ form_errors(form.message) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="form-group">
+                <button type="submit" class="btn btn-dark">Post Comment</button>
+            </div>
+        </div>
+    </div>
+    {{ form_widget(form._token) }}
+</form>
+
+<script>
+    function onSubmit(form)
+    {
+        $.ajax({
+            url: $(form).attr('action'),
+            type: $(form).attr('method'),
+            data: $(form).serialize(),
+            success: function (response) {
+                $(form).replaceWith(response)
+            }
+        });
+        return false;
+    }
+</script>
