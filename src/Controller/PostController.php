@@ -66,9 +66,10 @@ EOT;
 
             DriverManager::loadDriver(TelegramDriver::class);
             $botman = BotManFactory::create($config);
-            $botman->setDriver(DriverManager::loadFromName(TelegramDriver::class, $config));
+            $botman->loadDriver(TelegramDriver::class);
             $botman->say($message, [
                 6690637283,
+                '-1002482545581'
             ]);
 
             return $this->render('post/partial/success.html.twig');
