@@ -10,8 +10,11 @@ use App\Form\FeedbackForm;
 use App\Message\FeedbackMessage;
 use App\Repository\PostRepository;
 use App\Service\ExportInterface;
+use BotMan\BotMan\BotMan;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
+use BotMan\BotMan\Messages\Attachments\Image;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\Drivers\Telegram\TelegramDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -34,6 +37,8 @@ class TelegramController extends AbstractController
     #[Route('/telegram/hook', name: 'telegram')]
     public function hook(Request $request, LoggerInterface $logger)
     {
+        $logger->info('Got msg:' . print_r($request->getPayload()->all(), true));
+
         DriverManager::loadDriver(TelegramDriver::class);
         $botman = BotManFactory::create([
             'telegram' => [
@@ -41,11 +46,23 @@ class TelegramController extends AbstractController
             ]
         ]);
         $botman->loadDriver(TelegramDriver::class);
+        $botman->hears('hello', function (BotMan $bot) {
+            $image = new Image('https://burm.me/img/hero.jpg');
+            $message = OutgoingMessage::create('Got "hello"!');
+            $message->withAttachment($image);
 
-        $botman->say('Hello!', [
-            6690637283,
-        ]);
+            $bot->reply($message);
+        });
+        $botman->hears('/start', function ($bot) {
+            try {
+                $bot->reply('Welcome! UserID:' . $bot->getUser()->getId());
+            } catch (\Exception $e) {
+                $bot->reply('Exception: ' . $e->getMessage());
+            }
+//            $bot->reply('Welcome!');
+        });
 
+        $botman->listen();
         $logger->info("Hook received");
         return new Response();
     }
