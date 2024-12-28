@@ -32,7 +32,7 @@ class AppListener
         $request = $event->getRequest();
 
         $activity = new Activity();
-        $activity->setUrl($request->getRequestUri());
+        $activity->setUrl(substr($request->getRequestUri(), 0, 255));
         $activity->setAgent($request->headers->get('User-Agent', '') ?? '');
         $activity->setIpAddr($request->getClientIp());
         $activity->setQuery(\substr(json_encode($request->query->all()), 0, 1024));

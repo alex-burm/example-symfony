@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\ContentPage;
 use App\Entity\Feedback;
 use App\Entity\Post;
+use App\Entity\User;
 use App\Form\FeedbackForm;
 use App\Message\FeedbackMessage;
 use App\Repository\PostRepository;
@@ -38,6 +39,11 @@ use Symfony\Contracts\Cache\CacheInterface;
 
 class TelegramController extends AbstractController
 {
+    public function __construct(
+        protected EntityManagerInterface $entityManager
+    ) {
+    }
+
     #[Route('/telegram/hook', name: 'telegram')]
     public function hook(Request $request, LoggerInterface $logger, KernelInterface $kernel)
     {
@@ -94,5 +100,43 @@ class TelegramController extends AbstractController
         $botman->listen();
         $logger->info("Hook received");
         return new Response();
+    }
+
+    #[Route('telegram/callback')]
+    public function callback(Request $request)
+    {
+        $user = $this->getOrCreate($request->query->all());
+
+        // ...
+        dd($user, $request);
+    }
+
+    protected function getOrCreate(array $data)
+    {
+        if (false === \array_key_exists('username', $data)
+            || \is_null($data['username'])
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $user = $this->entityManager->getRepository(User::class)
+            ->findOneBy([
+                'login' => $data['username'],
+            ]);
+
+//        $user = $this->entityManager->getRepository(User::class)
+//            ->findOneByLogin($data['login']);
+
+        if (\is_null($user)) {
+            $user = new User();
+            $user->setLogin($data['username']);
+            $user->setFirstName($data['first_name'] ?? 'Guest');
+            $user->setLastName($data['last_name'] ?? '');
+
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
+
+        return $user;
     }
 }
