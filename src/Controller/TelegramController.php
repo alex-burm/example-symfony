@@ -11,11 +11,14 @@ use App\Message\FeedbackMessage;
 use App\Repository\PostRepository;
 use App\Service\ExportInterface;
 use BotMan\BotMan\BotMan;
+use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\BotMan\Messages\Attachments\Image;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use BotMan\Drivers\Telegram\TelegramDriver;
+use BotMan\Drivers\Telegram\TelegramFileDriver;
+use BotMan\Drivers\Telegram\TelegramPhotoDriver;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
@@ -25,6 +28,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,17 +39,20 @@ use Symfony\Contracts\Cache\CacheInterface;
 class TelegramController extends AbstractController
 {
     #[Route('/telegram/hook', name: 'telegram')]
-    public function hook(Request $request, LoggerInterface $logger)
+    public function hook(Request $request, LoggerInterface $logger, KernelInterface $kernel)
     {
         $logger->info('Got msg:' . print_r($request->getPayload()->all(), true));
 
         DriverManager::loadDriver(TelegramDriver::class);
+        DriverManager::loadDriver(TelegramPhotoDriver::class);
+        DriverManager::loadDriver(TelegramFileDriver::class);
+
         $botman = BotManFactory::create([
             'telegram' => [
                 'token' => $_ENV['TELEGRAM_TOKEN'],
             ]
         ]);
-        $botman->loadDriver(TelegramDriver::class);
+
         $botman->hears('hello', function (BotMan $bot) {
             $image = new Image('https://burm.me/img/hero.jpg');
             $message = OutgoingMessage::create('Got "hello"!');
@@ -59,7 +66,29 @@ class TelegramController extends AbstractController
             } catch (\Exception $e) {
                 $bot->reply('Exception: ' . $e->getMessage());
             }
-//            $bot->reply('Welcome!');
+        });
+
+        $botman->receivesImages(function($bot, $images) use ($logger) {
+            $logger->info('receivesImages');
+            foreach ($images as $image) {
+                $url = $image->getUrl(); // The direct url
+                $payload = $image->getPayload(); // The original payload
+
+                $bot->reply('URL: ' . $url);
+                $bot->reply('Payload: ' . print_r($payload, true));
+            }
+        });
+
+        $botman->receivesFiles(function($bot, $files) use ($logger, $kernel) {
+            $logger->info('receivesFiles');
+            foreach ($files as $file) {
+                $url = $file->getUrl(); // The direct url
+                $payload = $file->getPayload(); // The original payload
+
+                file_put_contents($kernel->getProjectDir() . '/var/telegram/' . $payload['file_name'], file_get_contents($url));
+                $bot->reply('URL: ' . $url);
+                $bot->reply('Payload: ' . print_r($payload, true));
+            }
         });
 
         $botman->listen();

@@ -33,9 +33,9 @@ class AppListener
 
         $activity = new Activity();
         $activity->setUrl($request->getRequestUri());
-        $activity->setAgent($request->headers->get('User-Agent'));
+        $activity->setAgent($request->headers->get('User-Agent', '') ?? '');
         $activity->setIpAddr($request->getClientIp());
-        $activity->setQuery(json_encode($request->query->all()));
+        $activity->setQuery(\substr(json_encode($request->query->all()), 0, 1024));
         $activity->setUserId($this->security->getUser()?->getId());
 
         $this->entityManager->persist($activity);
