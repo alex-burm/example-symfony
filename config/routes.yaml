@@ -16,3 +16,6 @@ lucky_show:
     controller: App\Controller\LuckyController::show
     requirements:
         id: \d+
+
+app_logout:
+    path: /logout

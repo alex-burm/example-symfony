@@ -17,7 +17,11 @@ use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\BotManFactory;
 use BotMan\BotMan\Drivers\DriverManager;
 use BotMan\BotMan\Messages\Attachments\Image;
+use BotMan\BotMan\Messages\Outgoing\Actions\Button;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+use BotMan\BotMan\Messages\Outgoing\Question;
+use BotMan\Drivers\Telegram\Extensions\Keyboard;
+use BotMan\Drivers\Telegram\Extensions\KeyboardButton;
 use BotMan\Drivers\Telegram\TelegramDriver;
 use BotMan\Drivers\Telegram\TelegramFileDriver;
 use BotMan\Drivers\Telegram\TelegramPhotoDriver;
@@ -77,24 +81,49 @@ class TelegramController extends AbstractController
         });
         $botman->hears('/start', function ($bot) {
             try {
-                $bot->reply('Welcome! UserID:' . $bot->getUser()->getId());
+                $question = Question::create('Welcome! Choice your action')
+                    ->addButtons([
+                        Button::create('Login')->value('login'),
+                        Button::create('Register')->additionalParameters([
+                            'url' => 'https://3c80300486a6.ngrok.app/',
+                        ]),
+                        Button::create('FAQ')->value('faq'),
+                        Button::create('Back')->value('/back'),
+                    ]);
+
+                $bot->reply($question);
             } catch (\Exception $e) {
                 $bot->reply('Exception: ' . $e->getMessage());
             }
         });
 
-        $botman->hears('/start{action}', function ($bot, $action) use ($router) {
+        $botman->hears('faq', function ($bot) {
+            $keyboards = Keyboard::create()
+                ->type(Keyboard::TYPE_KEYBOARD)
+                ->addRow(
+                    KeyboardButton::create('🚀 Button1'),
+                    KeyboardButton::create('💰 Button2'),
+                )
+                ->addRow(
+                    KeyboardButton::create('❤️ Button3'),
+                )
+                ->toArray();
+
+            $bot->reply('Keyboard action:', $keyboards);
+        });
+
+        $botman->hears('🚀 Button1', function ($bot) use ($router) {
+            $bot->reply('button 1 is clicked');
+        });
+        $botman->hears('login', function ($bot) use ($router) {
             try {
-                $action = \trim($action);
-                if ('login' === $action) {
-                    $params = [
-                        'username' => $bot->getUser()->getUsername(),
-                        'first_name' => $bot->getUser()->getFirstName(),
-                        'last_name' => $bot->getUser()->getLastName(),
-                    ];
-                    $url = $router->generate('telegram_callback', $params, RouterInterface::ABSOLUTE_URL);
-                    $bot->reply('Welcome! Click to continue ' . $url);
-                }
+                $params = [
+                    'username' => $bot->getUser()->getUsername(),
+                    'first_name' => $bot->getUser()->getFirstName(),
+                    'last_name' => $bot->getUser()->getLastName(),
+                ];
+                $url = $router->generate('telegram_callback', $params, RouterInterface::ABSOLUTE_URL);
+                $bot->reply('Welcome! Click to continue ' . $url);
             } catch (\Exception $e) {
                 $bot->reply('Exception: ' . $e->getMessage());
             }
