@@ -34,6 +34,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -48,7 +49,12 @@ class TelegramController extends AbstractController
     }
 
     #[Route('/telegram/hook', name: 'telegram')]
-    public function hook(Request $request, LoggerInterface $logger, KernelInterface $kernel)
+    public function hook(
+        Request $request,
+        LoggerInterface $logger,
+        KernelInterface $kernel,
+        RouterInterface $router,
+    )
     {
         $logger->info('Got msg:' . print_r($request->getPayload()->all(), true));
 
@@ -72,6 +78,23 @@ class TelegramController extends AbstractController
         $botman->hears('/start', function ($bot) {
             try {
                 $bot->reply('Welcome! UserID:' . $bot->getUser()->getId());
+            } catch (\Exception $e) {
+                $bot->reply('Exception: ' . $e->getMessage());
+            }
+        });
+
+        $botman->hears('/start{action}', function ($bot, $action) use ($router) {
+            try {
+                $action = \trim($action);
+                if ('login' === $action) {
+                    $params = [
+                        'username' => $bot->getUser()->getUsername(),
+                        'first_name' => $bot->getUser()->getFirstName(),
+                        'last_name' => $bot->getUser()->getLastName(),
+                    ];
+                    $url = $router->generate('telegram_callback', $params, RouterInterface::ABSOLUTE_URL);
+                    $bot->reply('Welcome! Click to continue ' . $url);
+                }
             } catch (\Exception $e) {
                 $bot->reply('Exception: ' . $e->getMessage());
             }
