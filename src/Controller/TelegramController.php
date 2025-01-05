@@ -7,6 +7,7 @@ use App\Entity\ContentPage;
 use App\Entity\Feedback;
 use App\Entity\Post;
 use App\Entity\User;
+use App\EventListener\AuthSuccessHandler;
 use App\Form\FeedbackForm;
 use App\Message\FeedbackMessage;
 use App\Repository\PostRepository;
@@ -33,6 +34,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -102,13 +105,20 @@ class TelegramController extends AbstractController
         return new Response();
     }
 
-    #[Route('telegram/callback')]
-    public function callback(Request $request)
-    {
+    #[Route('telegram/callback', name: 'telegram_callback')]
+    public function callback(
+        Request $request,
+        TokenStorageInterface $storage,
+        AuthSuccessHandler $successHandler,
+    ) {
         $user = $this->getOrCreate($request->query->all());
 
-        // ...
-        dd($user, $request);
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
+        $storage->setToken($token);
+
+        $successHandler->onAuthenticationSuccess($request, $token);
+
+        return $this->redirectToRoute('admin_dashboard');
     }
 
     protected function getOrCreate(array $data)

@@ -69,8 +69,7 @@
                         // authorization failed
                     }
 
-                    // Here you would want to validate data like described there https://core.telegram.org/widgets/login#checking-authorization
-                    console.log(data);
+                    document.location.href = '{{ path('telegram_callback') }}?' + (new URLSearchParams(data).toString())
                 }
             );
         }
