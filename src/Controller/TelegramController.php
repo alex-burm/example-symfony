@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\UserTelegramDto;
 use App\Entity\Category;
 use App\Entity\ContentPage;
 use App\Entity\Feedback;
@@ -29,11 +30,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -159,41 +163,22 @@ class TelegramController extends AbstractController
 
     #[Route('telegram/callback', name: 'telegram_callback')]
     public function callback(
-        Request $request,
-        TokenStorageInterface $storage,
-        AuthSuccessHandler $successHandler,
+        #[MapQueryString] UserTelegramDto $telegramUser,
+        Security $security,
     ) {
-        $user = $this->getOrCreate($request->query->all());
-
-        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
-        $storage->setToken($token);
-
-        $successHandler->onAuthenticationSuccess($request, $token);
-
+        $security->login($this->getOrCreate($telegramUser));
         return $this->redirectToRoute('admin_dashboard');
     }
 
-    protected function getOrCreate(array $data)
+    protected function getOrCreate(UserTelegramDto $telegramUser)
     {
-        if (false === \array_key_exists('username', $data)
-            || \is_null($data['username'])
-        ) {
-            throw $this->createAccessDeniedException();
-        }
-
         $user = $this->entityManager->getRepository(User::class)
             ->findOneBy([
-                'login' => $data['username'],
+                'login' => $telegramUser->getUsername(),
             ]);
 
-//        $user = $this->entityManager->getRepository(User::class)
-//            ->findOneByLogin($data['login']);
-
         if (\is_null($user)) {
-            $user = new User();
-            $user->setLogin($data['username']);
-            $user->setFirstName($data['first_name'] ?? 'Guest');
-            $user->setLastName($data['last_name'] ?? '');
+            $user = $telegramUser->getUser();
 
             $this->entityManager->persist($user);
             $this->entityManager->flush();
