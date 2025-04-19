@@ -34,6 +34,10 @@ services:
         arguments:
             $uploadDirectory: "%kernel.project_dir%/public/uploads"
 
+    App\Service\OpenAiService:
+        arguments:
+            $apiKey: "%env(OPENAI_KEY)%"
+
     app.menu_builder:
         class: App\Menu\Builder
         tags:
