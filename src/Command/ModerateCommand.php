@@ -28,6 +28,7 @@ class ModerateCommand extends Command
         ]);
 
         foreach ($comments as $comment) {
+            $output->writeln('Moderating comment: ' . $comment->getMessage());
             $this->moderate($comment);
         }
 
@@ -36,14 +37,7 @@ class ModerateCommand extends Command
 
     protected function moderate(BlogComment $comment): void
     {
-        $result = $this->openAi->completions(<<<EOT
-Ты модератор комментариев для блога. Оцени по шкале от 1 до 10, насколько комментарий подходит для публикации.
-
-Имя пользователя: {$comment->getName()}
-Комментарий: {$comment->getMessage()}
-
-Дай ответ только числом от 1 до 10, без объяснений и без дополнительных слов.
-EOT);
+        $result = $this->openAi->moderateComment($comment->getMessage());
 
         $value = (int) \trim($result);
         if ($value <= 0) {
