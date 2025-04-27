@@ -38,6 +38,11 @@ services:
         arguments:
             $apiKey: "%env(OPENAI_KEY)%"
 
+    App\Service\PineconeService:
+        arguments:
+            $apiKey: "%env(PINECONE_KEY)%"
+            $host: "%env(PINECONE_HOST)%"
+
     app.menu_builder:
         class: App\Menu\Builder
         tags:

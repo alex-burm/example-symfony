@@ -33,6 +33,16 @@ class OpenAiService
         return $result;
     }
 
+    public function getEmbedding(string $prompt): array
+    {
+        $response = $this->client->embeddings()->create([
+            'model' => 'text-embedding-3-small',
+            'input' => $prompt,
+        ]);
+
+        return $response->embeddings[0]->embedding;
+    }
+
     public function moderateComment(string $message): int
     {
         $moderateFunctionSchema = [
