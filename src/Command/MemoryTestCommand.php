@@ -33,12 +33,12 @@ class MemoryTestCommand extends Command
         $this->indexing($contextMessage);
         */
         $questionMessage = 'Александр, что он закончил и в каком году?';
-        $this->quering($questionMessage);
+        $this->query($questionMessage);
 
         return Command::SUCCESS;
     }
 
-    protected function quering(string $message): string
+    protected function query(string $message): string
     {
         $embedding = $this->openAi->getEmbedding($message);
 
