@@ -30,7 +30,7 @@ class MemoryTestCommand extends Command
             Родился в 1986 г, закончил университет магистратуру в 2009 году,
             по специальности "Компьютерные системы и сети".
         ';
-        $this->indexing($contextMessage);
+        $this->index($contextMessage);
         */
         $questionMessage = 'Александр, что он закончил и в каком году?';
         $this->query($questionMessage);
@@ -56,7 +56,7 @@ class MemoryTestCommand extends Command
         return $this->openAi->completions($prompt);
     }
 
-    protected function indexing(string $message): void
+    protected function index(string $message): void
     {
         $embedding = $this->openAi->getEmbedding($message);
         $this->pinecone->upsert([
