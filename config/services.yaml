@@ -82,3 +82,11 @@ services:
         calls:
             - [ setAnnotationReader, [ '@gedmo.mapping.driver.attribute' ] ]
             - [ setClock, [ '@clock' ] ]
+
+    maker.generator:
+        class: App\Service\CrudGenerator
+        arguments:
+          - '@maker.file_manager'
+          - 'App'
+          - '@maker.php_compat_util'
+          - '@maker.template_component_generator'
