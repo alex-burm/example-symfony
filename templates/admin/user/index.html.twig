@@ -19,12 +19,12 @@
                     <th>LastName</th>
                     <th>Login</th>
                     <th>Email</th>
-                    <th>ConfirmationCode</th>
                     <th>Birthday</th>
                     <th>actions</th>
                 </tr>
                 </thead>
-                <tbody>
+                <tbody id="container">
+                {#
                 {% for user in users %}
                     <tr>
                         <td>{{ user.id }}</td>
@@ -49,9 +49,57 @@
                         <td colspan="13">no records found</td>
                     </tr>
                 {% endfor %}
+                #}
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        const container = document.querySelector('#container');
+
+        fetch("{{ path('app_admin_user_index') }}", {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(result => {
+            return result.json();
+        }).then(json => {
+            let avatar = '';
+            for (user of json.users) {
+                if (user.avatar?.length > 0) {
+                    avatar = `<img src="{{ asset('uploads/user/') }}${user.avatar}" width="100px" />`;
+                } else {
+                    avatar = '';
+                }
+
+                let showUrl = '{{ path('app_admin_user_show', {'id': 'USER_ID'}) }}'.replace('USER_ID', user.id);
+                let editUrl = '{{ path('app_admin_user_edit', {'id': 'USER_ID'}) }}'.replace('USER_ID', user.id);
+
+                const tpl = `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td width="100px">
+                            ${avatar}
+                        </td>
+                        <td>${user.firstName}</td>
+                        <td>${user.lastName}</td>
+                        <td>${user.login ? user.login : ''}</td>
+                        <td>${user.email ? user.email : ''}</td>
+                        <td>${user.birthday ? user.birthday : ''}</td>
+                        <td>
+                            <a href="${showUrl}">show</a>
+                            <a href="${editUrl}">edit</a>
+                        </td>
+                    </tr>
+                `;
+
+                container.insertAdjacentHTML('beforeend', tpl);
+            }
+            console.log(json);
+        })
+    </script>
 {% endblock %}
